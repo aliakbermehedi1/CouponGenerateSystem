@@ -5,35 +5,35 @@ import { Table } from "../components/TableSettings";
 import { Modal } from "../components/ModalSettings";
 import { useState,useEffect } from "react";
 const Settings = () => {
-  const [modalOpen, setModalOpen] = useState(false);
-  const [rows, setRows] = useState(localStorage.getItem("alertSettings")?JSON.parse(localStorage.getItem("alertSettings")):[]);
-  useEffect(() => {
-    // storing input name
-    localStorage.setItem("alertSettings", JSON.stringify(rows));
-  }, [rows]);
-  const [rowToEdit, setRowToEdit] = useState(null);
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const [rows, setRows] = useState(localStorage.getItem("alertSettings")?JSON.parse(localStorage.getItem("alertSettings")):[]);
+  // useEffect(() => {
+  //   // storing input name
+  //   localStorage.setItem("alertSettings", JSON.stringify(rows));
+  // }, [rows]);
+  // const [rowToEdit, setRowToEdit] = useState(null);
 
-  const handleDeleteRow = (targetIndex) => {
-    setRows(rows.filter((_, idx) => idx !== targetIndex));
-  };
+  // const handleDeleteRow = (targetIndex) => {
+  //   setRows(rows.filter((_, idx) => idx !== targetIndex));
+  // };
 
-  const handleEditRow = (idx) => {
-    setRowToEdit(idx);
+  // const handleEditRow = (idx) => {
+  //   setRowToEdit(idx);
 
-    setModalOpen(true);
-  };
+  //   setModalOpen(true);
+  // };
 
-  const handleSubmit = (newRow) => {
-    rowToEdit === null
-      ? setRows([...rows, newRow])
-      : setRows(
-          rows.map((currRow, idx) => {
-            if (idx !== rowToEdit) return currRow;
+  // const handleSubmit = (newRow) => {
+  //   rowToEdit === null
+  //     ? setRows([...rows, newRow])
+  //     : setRows(
+  //         rows.map((currRow, idx) => {
+  //           if (idx !== rowToEdit) return currRow;
 
-            return newRow;
-          })
-        );
-  };
+  //           return newRow;
+  //         })
+  //       );
+  // };
 
   return (
     <>
