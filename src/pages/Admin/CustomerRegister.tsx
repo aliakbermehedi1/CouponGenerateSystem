@@ -1,6 +1,5 @@
 import Breadcrumb from "../../components/Breadcrumb";
 import TableThree from "../../components/TableThree";
-import TableTwo from "../../components/TableTwo";
 
 
 const CustomerRegister = () => {
@@ -10,8 +9,7 @@ const CustomerRegister = () => {
 
       <div className="flex flex-col gap-10">
         <TableThree />
-        {/* <TableThree /> */}
-        <TableTwo />
+
       </div>
     </>
   );
