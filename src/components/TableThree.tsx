@@ -1,84 +1,35 @@
+import { Button } from 'primereact/button';
 import React from 'react';
 
 const TableThree: React.FC = () => {
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-      <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-4 bg-white dark:bg-gray-900">
-        <div>
-          <button
-            id="dropdownActionButton"
-            data-dropdown-toggle="dropdownAction"
-            className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-3 py-1.5 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
-            type="button"
+    <div className="text-sm">
+      <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
+        <div className="ml-1">
+          <Button
+            className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-newButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4"
+            onClick={() => {}}
+            style={{ outline: 'none', borderColor: 'transparent !important' }}
           >
-            <span className="sr-only">Action button</span>
-            New
-            <svg
-              className="w-2.5 h-2.5 ms-2.5"
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 10 6"
-            >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="m1 1 4 4 4-4"
-              />
-            </svg>
-          </button>
-          {/* Dropdown menu */}
-          {/* Dropdown menu Here*/}
-          <div
-            id="dropdownAction"
-            className="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600"
-          >
-            <ul
-              className="py-1 text-sm text-gray-700 dark:text-gray-200"
-              aria-labelledby="dropdownActionButton"
-            >
-              <li>
-                <a
-                  href="#"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Reward
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Promote
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                >
-                  Activate account
-                </a>
-              </li>
-            </ul>
-            <div className="py-1">
-              <a
-                href="#"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-              >
-                Delete User
-              </a>
-            </div>
-          </div>
+            <span>
+              <i
+                className="pi pi-plus font-semibold"
+                style={{ fontSize: '12px' }}
+              ></i>
+            </span>
+            NEW
+          </Button>
         </div>
-        <label htmlFor="table-search" className="sr-only">
-          Search
-        </label>
-        <div className="relative">
-          <div className="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+
+        <div className="relative mx-8 mr-4">
+          <input
+            type="text"
+            id="table-search-users"
+            className="block py-2 ps-10 text-md text-gray-900 border border-gray-300 rounded-full w-56 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Search"
+          />
+
+          <div className="absolute inset-y-0 flex items-center p-3 ">
             <svg
               className="w-4 h-4 text-gray-500 dark:text-gray-400"
               aria-hidden="true"
@@ -95,104 +46,115 @@ const TableThree: React.FC = () => {
               />
             </svg>
           </div>
-          <input
-            type="text"
-            id="table-search-users"
-            className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Search for users"
-          />
         </div>
       </div>
-      <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-          <tr>
-            <th scope="col" className="p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-all-search"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-all-search" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Name
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Position
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Status
-            </th>
-            <th scope="col" className="px-6 py-3">
-              Action
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-            <td className="w-4 p-4">
-              <div className="flex items-center">
-                <input
-                  id="checkbox-table-search-1"
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                />
-                <label htmlFor="checkbox-table-search-1" className="sr-only">
-                  checkbox
-                </label>
-              </div>
-            </td>
-            <th
-              scope="row"
-              className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
-            >
-              <img
-                className="w-10 h-10 rounded-full"
-                src="/docs/images/people/profile-picture-1.jpg"
-                alt="Jese image"
-              />
-              <div className="ps-3">
-                <div className="text-base font-semibold">Neil Sims</div>
-                <div className="font-normal text-gray-500">
-                  neil.sims@flowbite.com
-                </div>
-              </div>
-            </th>
-            <td className="px-6 py-4">React Developer</td>
-            <td className="px-6 py-4">
-              <div className="flex items-center">
-                <div className="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{' '}
-                Online
-              </div>
-            </td>
-            <td className="px-6 py-4">
-              {/* Modal toggle */}
-              <a
-                href="#"
-                type="button"
-                data-modal-target="editUserModal"
-                data-modal-show="editUserModal"
-                className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-              >
-                Edit user
-              </a>
-            </td>
-          </tr>
-          {/* Repeat similar structure for other rows */}
-        </tbody>
-      </table>
 
-      <div
-        id="editUserModal"
-        tabIndex={-1}
-        aria-hidden="true"
-        className="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
-      >
-        {/* ... (rest of your modal structure) ... */}
+      <div className="relative overflow-x-auto shadow-md">
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th className="border border-tableBorder w-8">
+                <div className="flex items-center justify-center">
+                  <input
+                    id="checkbox"
+                    type="checkbox"
+                    className="w-4 h-4 my-2 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                </div>
+              </th>
+              <th className="border border-tableBorder text-center">
+                Customer Name
+              </th>
+              <th className="border border-tableBorder text-center">
+                Short Name
+              </th>
+              <th className="border border-tableBorder text-center">
+                Customer Address
+              </th>
+              <th className="border border-tableBorder text-center">
+                Contact No.
+              </th>
+              <th className="border border-tableBorder text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+              <td className="border border-tableBorder w-8">
+                <div className="flex items-center">
+                  <input
+                    id="checkbox-table-search-1"
+                    type="checkbox"
+                    className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="checkbox-table-search-1" className="sr-only">
+                    checkbox
+                  </label>
+                </div>
+              </td>
+
+              <td className="border border-tableBorder pl-1">Ala Uddin</td>
+              <td className="border border-tableBorder pl-1">Sahin</td>
+              <td className="border border-tableBorder pl-1">Dhaka</td>
+              <td className="border border-tableBorder pl-1">+8801854430058</td>
+              <td className="border border-tableBorder pl-1">
+                {/* Modal toggle */}
+
+                <div className="flex justify-center items-center py-2">
+                  <Button
+                    className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
+                    onClick={() => {}}
+                  >
+                    <span>
+                      <i
+                        className="pi pi-plus font-semibold"
+                        style={{ fontSize: '12px' }}
+                      ></i>
+                    </span>
+                    EDIT
+                  </Button>
+                </div>
+              </td>
+            </tr>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+              <td className="border border-tableBorder">
+                <div className="flex items-center">
+                  <input
+                    id="checkbox-table-search-1"
+                    type="checkbox"
+                    className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="checkbox-table-search-1" className="sr-only">
+                    checkbox
+                  </label>
+                </div>
+              </td>
+
+              <td className="border border-tableBorder pl-1">Ali Akber</td>
+              <td className="border border-tableBorder pl-1">Mehedi</td>
+              <td className="border border-tableBorder pl-1">Feni</td>
+              <td className="border border-tableBorder pl-1">+8801809999999</td>
+              <td className="border border-tableBorder pl-1">
+                {/* Modal toggle */}
+                <div className="flex justify-center items-center py-2">
+                  <Button
+                    className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
+                    onClick={() => {}}
+                  >
+                    <span>
+                      <i
+                        className="pi pi-plus font-semibold"
+                        style={{ fontSize: '12px' }}
+                      ></i>
+                    </span>
+                    EDIT
+                  </Button>
+                </div>
+              </td>
+            </tr>
+            {/* Repeat similar structure for other rows */}
+          </tbody>
+        </table>
       </div>
     </div>
   );

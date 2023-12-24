@@ -44,6 +44,9 @@ module.exports = {
       success: '#219653',
       danger: '#D34053',
       warning: '#FFA70B',
+      newButtonColor: `#689F38`,
+      editButtonColor: `#3F51B5`,
+      tableBorder: `#DBD9D7`
     },
     screens: {
       '2xsm': '375px',

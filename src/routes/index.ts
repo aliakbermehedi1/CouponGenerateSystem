@@ -1,4 +1,6 @@
 import { lazy } from 'react';
+import CustomerInvoice from '../pages/Admin/CustomerInvoice';
+import CustomerinvoiceDetails from '../pages/Admin/CustomerInvoice/CustomerinvoiceDetails';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -58,9 +60,19 @@ const coreRoutes = [
     component: Buttons,
   },
   {
-    path: '/Admin/CustomerRegister',
+    path: '/CustomerRegister',
     title: 'Customer Register',
     component: CustomerRegister,
+  },
+  {
+    path: '/CustomerInvoice',
+    title: 'Customer Invoice',
+    component: CustomerInvoice,
+  },
+  {
+    path: '/CustomerInvoiceDetails',
+    title: 'Customer Invoice Details',
+    component: CustomerinvoiceDetails,
   },
 ];
 

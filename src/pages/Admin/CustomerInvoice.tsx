@@ -6,11 +6,15 @@ import { Dialog } from 'primereact/dialog';
 import CustomerInsert from './CustomerInfo/CustomerInsert';
 import CustomerUpdate from './CustomerInfo/CustomerUpdate';
 import { toast } from 'react-toastify'; // Import the toast function
+import CustomerinvoiceDetails from './CustomerInvoice/CustomerinvoiceDetails';
+import { useNavigate } from 'react-router-dom';
 // import { ObjectId } from 'mongodb';
 
-const CustomerRegister: React.FC = () => {
+const CustomerInvoice: React.FC = () => {
+  const navigate = useNavigate();
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
+  const [showDialog2, setShowDialog2] = useState<boolean>(false); //Invoice
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
 
   //state for search query
@@ -46,8 +50,26 @@ const CustomerRegister: React.FC = () => {
   const onHideDialog = (): void => {
     setShowDialog(false);
     setShowDialog1(false);
+    setShowDialog2(false);
   };
 
+  // handle Invoice
+  const handleInvoiceClick = async (customerId: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
+      );
+      if (response.data) {
+        setSelectedCustomer(response.data);
+        // Navigate to the desired route
+        navigate('/CustomerInvoiceDetails');
+      } else {
+        console.error('Customer data not found');
+      }
+    } catch (error) {
+      console.error('Error fetching customer data:', error);
+    }
+  };
   // handle Update or Edit
   const handleEditClick = async (customerId: string) => {
     try {
@@ -115,11 +137,11 @@ const CustomerRegister: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Customer Dashboard" />
+      <Breadcrumb pageName="Customer Invoice" />
 
       <div className="text-sm">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
-          <div className="ml-1">
+          {/* <div className="ml-1">
             <Button
               className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-newButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4"
               onClick={() => setShowDialog(true)}
@@ -133,7 +155,7 @@ const CustomerRegister: React.FC = () => {
               </span>
               NEW
             </Button>
-          </div>
+          </div> */}
 
           <div className="relative mx-8 mr-4">
             <input
@@ -193,9 +215,10 @@ const CustomerRegister: React.FC = () => {
                 <th className="border border-tableBorder text-center">
                   Contact No.
                 </th>
-                <th className="border border-tableBorder text-center">Created Date</th>
                 <th className="border border-tableBorder text-center">Email</th>
-                <th className="border border-tableBorder text-center"></th>
+                <th className="border border-tableBorder text-center">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -238,6 +261,22 @@ const CustomerRegister: React.FC = () => {
                   <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
+                        className="font-semibold gap-2.5 rounded-lg bg-warning text-black py-2 px-4"
+                        onClick={() => handleInvoiceClick(customer.CustomerID)}
+                      >
+                        <span>
+                          <i
+                            className="pi pi-pencil font-semibold"
+                            style={{ fontSize: '12px' }}
+                          ></i>
+                        </span>
+                        Invoice
+                      </Button>
+                    </div>
+                  </td>
+                  {/* <td className="border border-tableBorder pl-1">
+                    <div className="flex justify-center items-center py-2">
+                      <Button
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
                         onClick={() => handleEditClick(customer.CustomerID)}
                       >
@@ -250,8 +289,8 @@ const CustomerRegister: React.FC = () => {
                         EDIT
                       </Button>
                     </div>
-                  </td>
-                  <td className="border border-tableBorder pl-1">
+                  </td> */}
+                  {/* <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
@@ -266,7 +305,7 @@ const CustomerRegister: React.FC = () => {
                         Delete
                       </Button>
                     </div>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>
@@ -326,8 +365,25 @@ const CustomerRegister: React.FC = () => {
           </div>
         }
       ></Dialog>
+
+      {/* Invoice Table */}
+      {/* <Dialog
+        keepInViewport={false}
+        className="custom-dialog"
+        blockScroll
+        header={'Customer invoice'}
+        visible={showDialog2}
+        style={{ width: '70vw' }}
+        onHide={onHideDialog}
+        id="fname"
+      >
+        <CustomerinvoiceDetails
+          onHide={onHideDialog}
+          fetchCustomers={fetchCustomers}
+        />
+      </Dialog> */}
     </>
   );
 };
 
-export default CustomerRegister;
+export default CustomerInvoice;

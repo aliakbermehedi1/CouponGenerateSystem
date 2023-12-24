@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from 'primereact/button';
-import Breadcrumb from '../../components/Breadcrumb';
 import { Dialog } from 'primereact/dialog';
-import CustomerInsert from './CustomerInfo/CustomerInsert';
-import CustomerUpdate from './CustomerInfo/CustomerUpdate';
 import { toast } from 'react-toastify'; // Import the toast function
+import CustomerInsert from '../CustomerInfo/CustomerInsert';
+import CustomerUpdate from '../CustomerInfo/CustomerUpdate';
+import Breadcrumb from '../../../components/Breadcrumb';
+import { useNavigate } from 'react-router-dom';
 // import { ObjectId } from 'mongodb';
 
-const CustomerRegister: React.FC = () => {
+type CustomerInsertProps = {
+  onHide: () => void;
+  fetchCustomers: () => void;
+};
+
+const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
+  const navigate = useNavigate(); // Get the navigate function
+
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
-  const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
+  //   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
 
   //state for search query
@@ -45,7 +57,6 @@ const CustomerRegister: React.FC = () => {
 
   const onHideDialog = (): void => {
     setShowDialog(false);
-    setShowDialog1(false);
   };
 
   // handle Update or Edit
@@ -59,7 +70,7 @@ const CustomerRegister: React.FC = () => {
         // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
         // For example:
         setSelectedCustomer(response.data);
-        setShowDialog1(true);
+        setShowDialog(true);
       } else {
         console.error('Customer data not found');
       }
@@ -115,7 +126,7 @@ const CustomerRegister: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Customer Dashboard" />
+      <Breadcrumb pageName="Customer Invoice Details" />
 
       <div className="text-sm">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
@@ -133,6 +144,59 @@ const CustomerRegister: React.FC = () => {
               </span>
               NEW
             </Button>
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-arrow-left font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              BACK
+            </Button>
+            {/* start total point */}
+            <div
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-warning py-2 px-10 text-center text-black hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              //   onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i className="font-semibold" style={{ fontSize: '12px' }}></i>
+              </span>
+              Total Point: 100
+            </div>
+            {/* end total point */}
+            {/* start total value sr */}
+            <div
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-success py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              //   onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i className="font-semibold" style={{ fontSize: '12px' }}></i>
+              </span>
+              Total Value SR: 50
+            </div>
+            {/* end total value sr */}
+
+            {/* generate coupon button */}
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-danger py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-tag font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              Generate Coupon
+            </Button>
+            {/* end generate */}
           </div>
 
           <div className="relative mx-8 mr-4">
@@ -188,14 +252,17 @@ const CustomerRegister: React.FC = () => {
                   Customer Name
                 </th>
                 <th className="border border-tableBorder text-center">
-                  Customer Address
-                </th>
-                <th className="border border-tableBorder text-center">
                   Contact No.
                 </th>
-                <th className="border border-tableBorder text-center">Created Date</th>
-                <th className="border border-tableBorder text-center">Email</th>
-                <th className="border border-tableBorder text-center"></th>
+                <th className="border border-tableBorder text-center">
+                  Invoice No.
+                </th>
+                <th className="border border-tableBorder text-center">
+                  Purchase Amount
+                </th>
+                <th className="border border-tableBorder text-center">
+                  Action
+                </th>
               </tr>
             </thead>
 
@@ -226,20 +293,23 @@ const CustomerRegister: React.FC = () => {
                   <td className="border border-tableBorder pl-1">
                     {customer.CustomerName}
                   </td>
-                  <td className="border border-tableBorder pl-1">
-                    {customer.CustomerAddress}
-                  </td>
+
                   <td className="border border-tableBorder pl-1">
                     {customer.ContactNo}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {customer.Email}
+                    {/* {customer.ContactNo} */}
+                    200
+                  </td>
+                  <td className="border border-tableBorder pl-1">
+                    {/* {customer.ContactNo} */}
                   </td>
                   <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
                         onClick={() => handleEditClick(customer.CustomerID)}
+                        disabled
                       >
                         <span>
                           <i
@@ -288,22 +358,6 @@ const CustomerRegister: React.FC = () => {
         <CustomerInsert onHide={onHideDialog} fetchCustomers={fetchCustomers} />
       </Dialog>
       {/* start update dualog */}
-      <Dialog
-        keepInViewport={false}
-        className="custom-dialog"
-        blockScroll
-        header={'Customer Information Update'}
-        visible={showDialog1}
-        style={{ width: '40vw' }}
-        onHide={onHideDialog}
-        id="fname"
-      >
-        <CustomerUpdate
-          onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
-          customerData={selectedCustomer}
-        />
-      </Dialog>
 
       <Dialog
         visible={showConfirmationDialog}
@@ -330,4 +384,4 @@ const CustomerRegister: React.FC = () => {
   );
 };
 
-export default CustomerRegister;
+export default CustomerinvoiceDetails;
