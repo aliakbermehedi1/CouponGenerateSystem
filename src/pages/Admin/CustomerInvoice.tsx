@@ -1,31 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from 'primereact/button';
-import Breadcrumb from '../../components/Breadcrumb';
-import { Dialog } from 'primereact/dialog';
-import CustomerInsert from './CustomerInfo/CustomerInsert';
-import CustomerUpdate from './CustomerInfo/CustomerUpdate';
-import { toast } from 'react-toastify'; // Import the toast function
 import CustomerinvoiceDetails from './CustomerInvoice/CustomerinvoiceDetails';
+import CustomerUpdate from './CustomerInfo/CustomerUpdate';
+import CustomerInsert from './CustomerInfo/CustomerInsert';
+import Breadcrumb from '../../components/Breadcrumb';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { ObjectId } from 'mongodb';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { toast } from 'react-toastify'; // Import the toast function
+import axios from 'axios';
 
 const CustomerInvoice: React.FC = () => {
   const navigate = useNavigate();
-  const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
-  const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
-  const [showDialog2, setShowDialog2] = useState<boolean>(false); //Invoice
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
 
   //state for search query
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  // delete
-  const [showConfirmationDialog, setShowConfirmationDialog] =
-    useState<boolean>(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null,
-  );
 
   const [customers, setCustomers] = useState<any[]>([]);
 
@@ -47,81 +36,13 @@ const CustomerInvoice: React.FC = () => {
     fetchCustomers();
   }, []);
 
-  const onHideDialog = (): void => {
-    setShowDialog(false);
-    setShowDialog1(false);
-    setShowDialog2(false);
-  };
-
   // handle Invoice
-  const handleInvoiceClick = async (customerId: string) => {
+  const handleInvoiceClick = (customerId: string, CustomerName: string, NationalID: string, CustomerAddress: String, ContactNo: String, Email: String, formattedCustomerID: String) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
-      );
-      if (response.data) {
-        setSelectedCustomer(response.data);
-        // Navigate to the desired route
-        navigate('/CustomerInvoiceDetails');
-      } else {
-        console.error('Customer data not found');
-      }
+      // Directly navigate to the desired route with the CustomerID as a query parameter
+      navigate(`/CustomerInvoiceDetails?CustomerID=${customerId}&CustomerName=${CustomerName}&NationalID=${NationalID}&CustomerAddress=${CustomerAddress}&ContactNo=${ContactNo}&Email=${Email}&formattedCustomerID=${formattedCustomerID}`);
     } catch (error) {
-      console.error('Error fetching customer data:', error);
-    }
-  };
-  // handle Update or Edit
-  const handleEditClick = async (customerId: string) => {
-    try {
-      // const convertedId = new ObjectId(customerId);
-      const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
-      );
-      if (response.data) {
-        // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
-        // For example:
-        setSelectedCustomer(response.data);
-        setShowDialog1(true);
-      } else {
-        console.error('Customer data not found');
-      }
-    } catch (error) {
-      console.error('Error fetching customer data:', error);
-    }
-  };
-
-  // handle Delete
-  const handleDeleteClick = (customerId: number) => {
-    setCustomerIdToDelete(customerId); // Store the customerId that needs to be deleted
-    setShowConfirmationDialog(true); // Show the confirmation dialog
-  };
-
-  const confirmDelete = async () => {
-    try {
-      const response = await axios.put(
-        'http://localhost:8080/api/CustomerInformation/DeleteCustomer',
-        { CustomerID: customerIdToDelete },
-      );
-
-      if (response.data.success) {
-        fetchCustomers();
-        setShowConfirmationDialog(false); // Close the confirmation dialog
-
-        // Display a success toast message
-        toast.success('Deleted Successfully', {
-          position: 'top-right',
-          autoClose: 3000, // Close the toast after 3 seconds
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      } else {
-        console.error('Failed to delete customer:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error deleting customer:', error);
+      console.error('Error navigating to CustomerInvoiceDetails:', error);
     }
   };
 
@@ -140,7 +61,7 @@ const CustomerInvoice: React.FC = () => {
       <Breadcrumb pageName="Customer Invoice" />
 
       <div className="text-sm">
-        <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
+        <div className="flex items-center justify-end flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
           {/* <div className="ml-1">
             <Button
               className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-newButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4"
@@ -191,7 +112,7 @@ const CustomerInvoice: React.FC = () => {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th className="border border-tableBorder w-8">
+                {/* <th className="border border-tableBorder w-8">
                   <div className="flex items-center justify-center">
                     <input
                       id="checkbox"
@@ -199,7 +120,7 @@ const CustomerInvoice: React.FC = () => {
                       className="w-4 h-4 my-2 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                     />
                   </div>
-                </th>
+                </th> */}
                 <th className="border border-tableBorder text-center">
                   Customer ID
                 </th>
@@ -216,6 +137,9 @@ const CustomerInvoice: React.FC = () => {
                   Contact No.
                 </th>
                 <th className="border border-tableBorder text-center">Email</th>
+                <th className="border border-tableBorder text-center py-2">
+                  Created Date
+                </th>
                 <th className="border border-tableBorder text-center">
                   Action
                 </th>
@@ -225,7 +149,7 @@ const CustomerInvoice: React.FC = () => {
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id?.$oid}>
-                  <td className="border border-tableBorder pl-1">
+                  {/* <td className="border border-tableBorder pl-1">
                     <div className="flex items-center">
                       <input
                         id="checkbox-table-search-1"
@@ -239,9 +163,9 @@ const CustomerInvoice: React.FC = () => {
                         checkbox
                       </label>
                     </div>
-                  </td>
+                  </td> */}
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.CustomerID}
+                    {customer.formattedCustomerID}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
                     {customer.NationalID}
@@ -259,10 +183,13 @@ const CustomerInvoice: React.FC = () => {
                     {customer.Email}
                   </td>
                   <td className="border border-tableBorder pl-1">
+                    {new Date(customer.createdDate).toLocaleDateString('en-GB')}
+                  </td>
+                  <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-warning text-black py-2 px-4"
-                        onClick={() => handleInvoiceClick(customer.CustomerID)}
+                        onClick={() => handleInvoiceClick(customer.CustomerID, customer.CustomerName, customer.NationalID, customer.CustomerAddress, customer.ContactNo, customer.Email, customer.formattedCustomerID)}
                       >
                         <span>
                           <i
@@ -274,114 +201,12 @@ const CustomerInvoice: React.FC = () => {
                       </Button>
                     </div>
                   </td>
-                  {/* <td className="border border-tableBorder pl-1">
-                    <div className="flex justify-center items-center py-2">
-                      <Button
-                        className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
-                        onClick={() => handleEditClick(customer.CustomerID)}
-                      >
-                        <span>
-                          <i
-                            className="pi pi-pencil font-semibold"
-                            style={{ fontSize: '12px' }}
-                          ></i>
-                        </span>
-                        EDIT
-                      </Button>
-                    </div>
-                  </td> */}
-                  {/* <td className="border border-tableBorder pl-1">
-                    <div className="flex justify-center items-center py-2">
-                      <Button
-                        className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
-                        onClick={() => handleDeleteClick(customer.CustomerID)}
-                      >
-                        <span>
-                          <i
-                            className="pi pi-trash font-semibold"
-                            style={{ fontSize: '12px' }}
-                          ></i>
-                        </span>
-                        Delete
-                      </Button>
-                    </div>
-                  </td> */}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* start insert dialog */}
-      <Dialog
-        keepInViewport={false}
-        className="custom-dialog"
-        blockScroll
-        header={'Customer Information Entry'}
-        visible={showDialog}
-        style={{ width: '40vw' }}
-        onHide={onHideDialog}
-        id="fname"
-      >
-        <CustomerInsert onHide={onHideDialog} fetchCustomers={fetchCustomers} />
-      </Dialog>
-      {/* start update dualog */}
-      <Dialog
-        keepInViewport={false}
-        className="custom-dialog"
-        blockScroll
-        header={'Customer Information Update'}
-        visible={showDialog1}
-        style={{ width: '40vw' }}
-        onHide={onHideDialog}
-        id="fname"
-      >
-        <CustomerUpdate
-          onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
-          customerData={selectedCustomer}
-        />
-      </Dialog>
-
-      <Dialog
-        visible={showConfirmationDialog}
-        onHide={() => setShowConfirmationDialog(false)}
-        header="Are you sure to delete customer?"
-        footer={
-          <div className="flex items-center justify-center">
-            <Button
-              label="No"
-              icon="pi pi-times"
-              className="p-button-text bg-danger text-white py-3 px-8 mr-4 text-lg"
-              onClick={() => setShowConfirmationDialog(false)}
-            />
-            <Button
-              label="Yes"
-              icon="pi pi-check"
-              className="p-button-text bg-success text-white py-3 px-8 mr-4 text-lg"
-              onClick={confirmDelete}
-            />
-          </div>
-        }
-      ></Dialog>
-
-      {/* Invoice Table */}
-      {/* <Dialog
-        keepInViewport={false}
-        className="custom-dialog"
-        blockScroll
-        header={'Customer invoice'}
-        visible={showDialog2}
-        style={{ width: '70vw' }}
-        onHide={onHideDialog}
-        id="fname"
-      >
-        <CustomerinvoiceDetails
-          onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
-        />
-      </Dialog> */}
     </>
   );
 };

@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
-import { toast } from 'react-toastify'; // Import the toast function
-import CustomerInsert from '../CustomerInfo/CustomerInsert';
-import CustomerUpdate from '../CustomerInfo/CustomerUpdate';
+import InsertCustomerInvoice from './InsertCustomerInvoice';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../components/Breadcrumb';
-import { useNavigate } from 'react-router-dom';
-// import { ObjectId } from 'mongodb';
+import React, { useState, useEffect } from 'react';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import GenerateCoupon from './GenerateCoupon';
 
 type CustomerInsertProps = {
   onHide: () => void;
@@ -16,14 +15,33 @@ type CustomerInsertProps = {
 
 const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const navigate = useNavigate(); // Get the navigate function
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const CustomerIDQuery = searchParams.get('CustomerID');
+  const CustomerName = searchParams.get('CustomerName');
+  const NationalID = searchParams.get('NationalID');
+  console.log('CustomerID', CustomerIDQuery);
+  console.log('CustomerName', CustomerName);
+  console.log('NationalID', NationalID);
+
+  const [totalValueSR, setTotalValueSR] = useState<number>(0); //Total Value SR here
+
+  const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<
+    Array<string | number>
+  >([]);
+  //checkbox
 
   const handleBackClick = () => {
     navigate(-1); // Navigate back to the previous page
   };
 
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
+  const [showDialog1, setShowDialog1] = useState<boolean>(false); //generate Coupon dialog state
   //   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
+
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]); //check checkbox select or not
+
 
   //state for search query
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -41,10 +59,11 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const fetchCustomers = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/CustomerInformation/GetCustomer',
-      );
+        `http://localhost:8080/api/CustomerInformation/GetInvoicesByCustomerId/${CustomerIDQuery}`,
+      ); // Using template literals here to inject CustomerID
       if (response.data.success) {
-        setCustomers(response.data.data);
+        // Assuming that the data returned is an array of customers
+        setCustomers(response.data.data); // Setting the fetched customers into the state
       }
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -53,10 +72,13 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
 
   useEffect(() => {
     fetchCustomers();
-  }, []);
+  }, []); // This effect will run only once when the component mounts
+
+  console.log('fetch data here', customers);
 
   const onHideDialog = (): void => {
     setShowDialog(false);
+    setShowDialog1(false);
   };
 
   // handle Update or Edit
@@ -124,6 +146,45 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       : true,
   );
 
+
+
+  const calculateTotal = () => {
+    let total = 0;
+    filteredCustomers.forEach((customer) => {
+      if (selectedInvoiceIds.includes(customer._id)) {
+        total += customer.PurchaseAmount / 2;
+      }
+    });
+    return total;
+  };
+
+  // Use useEffect to update the totalValueSR whenever filteredCustomers or selectedInvoiceIds change
+  useEffect(() => {
+    const calculatedTotal = calculateTotal();
+    const newValue = (calculatedTotal / 100) * 5;
+    setTotalValueSR(newValue);
+  }, [filteredCustomers, selectedInvoiceIds]);
+
+
+  // start handle checkbiox
+  const handleCheckboxClick = (id: string | number) => {
+    const stringifiedId = String(id); // Convert to string for consistent comparison
+    
+    if (selectedCheckboxes.includes(stringifiedId)) {
+      setSelectedCheckboxes((prevIds) => prevIds.filter((item) => item !== stringifiedId));
+    } else {
+      setSelectedCheckboxes((prevIds) => [...prevIds, stringifiedId]);
+    }
+  
+    if (selectedInvoiceIds.includes(stringifiedId)) {
+      setSelectedInvoiceIds((prevIds) => prevIds.filter((item) => item !== stringifiedId));
+    } else {
+      setSelectedInvoiceIds((prevIds) => [...prevIds, stringifiedId]);
+    }
+  };
+  
+  
+  // end handle checkbiox
   return (
     <>
       <Breadcrumb pageName="Customer Invoice Details" />
@@ -160,42 +221,41 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
             {/* start total point */}
             <div
               className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-warning py-2 px-10 text-center text-black hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
-              //   onClick={handleBackClick} // Use the handleBackClick function here
               style={{ outline: 'none', borderColor: 'transparent !important' }}
             >
               <span>
                 <i className="font-semibold" style={{ fontSize: '12px' }}></i>
               </span>
-              Total Point: 100
+              Total Point: <p className="ml-1">{calculateTotal()}</p>
             </div>
+
             {/* end total point */}
             {/* start total value sr */}
             <div
               className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-success py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
-              //   onClick={handleBackClick} // Use the handleBackClick function here
               style={{ outline: 'none', borderColor: 'transparent !important' }}
             >
               <span>
                 <i className="font-semibold" style={{ fontSize: '12px' }}></i>
               </span>
-              Total Value SR: 50
+              Total Value SR: {totalValueSR.toFixed(2)}
             </div>
+
             {/* end total value sr */}
 
             {/* generate coupon button */}
             <Button
-              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-danger py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
-              onClick={handleBackClick} // Use the handleBackClick function here
-              style={{ outline: 'none', borderColor: 'transparent !important' }}
-            >
-              <span>
-                <i
-                  className="pi pi-tag font-semibold"
-                  style={{ fontSize: '12px' }}
-                ></i>
-              </span>
-              Generate Coupon
-            </Button>
+  className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-danger py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+  onClick={() => setShowDialog1(true)}
+  disabled={selectedCheckboxes.length === 0}
+  style={{ outline: 'none', borderColor: 'transparent !important' }}
+>
+  <span>
+    <i className="pi pi-tag font-semibold" style={{ fontSize: '12px' }}></i>
+  </span>
+  Generate Coupon
+</Button>
+
             {/* end generate */}
           </div>
 
@@ -274,6 +334,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                       <input
                         id="checkbox-table-search-1"
                         type="checkbox"
+                        onChange={() => handleCheckboxClick(customer._id)} // Assuming _id represents invoiceId
                         className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                       />
                       <label
@@ -285,24 +346,23 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                     </div>
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.CustomerID}
+                    {CustomerIDQuery}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.NationalID}
+                    {NationalID}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {customer.CustomerName}
+                    {CustomerName}
                   </td>
 
                   <td className="border border-tableBorder pl-1">
-                    {customer.ContactNo}
+                    {/* {customer.ContactNo} */}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {/* {customer.ContactNo} */}
-                    200
+                    {customer.InvoiceNo}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {/* {customer.ContactNo} */}
+                    {customer.PurchaseAmount}
                   </td>
                   <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
@@ -349,13 +409,19 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
         keepInViewport={false}
         className="custom-dialog"
         blockScroll
-        header={'Customer Information Entry'}
+        header={'Customer Name'}
         visible={showDialog}
         style={{ width: '40vw' }}
         onHide={onHideDialog}
         id="fname"
       >
-        <CustomerInsert onHide={onHideDialog} fetchCustomers={fetchCustomers} />
+        <InsertCustomerInvoice
+          onHide={onHideDialog}
+          fetchCustomers={fetchCustomers}
+          customerName={CustomerName}
+          nationalID={NationalID}
+          customerID={CustomerIDQuery}
+        />
       </Dialog>
       {/* start update dualog */}
 
@@ -380,6 +446,28 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
           </div>
         }
       ></Dialog>
+
+      {/* generate coupon dialog start */}
+      <Dialog
+        keepInViewport={false}
+        className="custom-dialog"
+        blockScroll
+        header={'Generate Coupon'}
+        visible={showDialog1}
+        style={{ width: '40vw' }}
+        onHide={onHideDialog}
+        id="fname"
+      >
+        <GenerateCoupon
+          onHide={onHideDialog}
+          fetchCustomers={fetchCustomers}
+          customerName={CustomerName}
+          nationalID={NationalID}
+          customerID={CustomerIDQuery}
+          totalValueSR={totalValueSR}
+        />
+      </Dialog>
+      {/* generate coupon dialog end */}
     </>
   );
 };

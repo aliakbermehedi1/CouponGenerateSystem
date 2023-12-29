@@ -46,7 +46,8 @@ module.exports = {
       warning: '#FFA70B',
       newButtonColor: `#689F38`,
       editButtonColor: `#3F51B5`,
-      tableBorder: `#DBD9D7`
+      tableBorder: `#DBD9D7`,
+      exportButtonColor: `#FB923C`
     },
     screens: {
       '2xsm': '375px',

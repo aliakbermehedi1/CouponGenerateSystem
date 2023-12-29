@@ -6,7 +6,7 @@ import { Dialog } from 'primereact/dialog';
 import CustomerInsert from './CustomerInfo/CustomerInsert';
 import CustomerUpdate from './CustomerInfo/CustomerUpdate';
 import { toast } from 'react-toastify'; // Import the toast function
-// import { ObjectId } from 'mongodb';
+import * as XLSX from 'xlsx';
 
 const CustomerRegister: React.FC = () => {
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
@@ -48,6 +48,21 @@ const CustomerRegister: React.FC = () => {
     setShowDialog1(false);
   };
 
+  // start excle
+  const exportToExcel = () => {
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+  
+    // Convert customers array to worksheet
+    const ws = XLSX.utils.json_to_sheet(customers);
+  
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Customers');
+  
+    // Save workbook as Excel file with .xls extension
+    XLSX.writeFile(wb, 'customers.xls');
+  };
+  // end excle
   // handle Update or Edit
   const handleEditClick = async (customerId: string) => {
     try {
@@ -133,6 +148,19 @@ const CustomerRegister: React.FC = () => {
               </span>
               NEW
             </Button>
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-exportButtonColor py-2 px-6 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-3"
+              onClick={exportToExcel}
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-download font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              EXPORT
+            </Button>
           </div>
 
           <div className="relative mx-8 mr-4">
@@ -169,56 +197,36 @@ const CustomerRegister: React.FC = () => {
           <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
-                <th className="border border-tableBorder w-8">
-                  <div className="flex items-center justify-center">
-                    <input
-                      id="checkbox"
-                      type="checkbox"
-                      className="w-4 h-4 my-2 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    />
-                  </div>
-                </th>
-                <th className="border border-tableBorder text-center">
+                <th className="border border-tableBorder text-center py-2">
                   Customer ID
                 </th>
-                <th className="border border-tableBorder text-center">
+                <th className="border border-tableBorder text-center py-2">
                   National ID
                 </th>
-                <th className="border border-tableBorder text-center">
+                <th className="border border-tableBorder text-center py-2">
                   Customer Name
                 </th>
-                <th className="border border-tableBorder text-center">
+                <th className="border border-tableBorder text-center py-2">
                   Customer Address
                 </th>
-                <th className="border border-tableBorder text-center">
+                <th className="border border-tableBorder text-center py-2">
                   Contact No.
                 </th>
-                <th className="border border-tableBorder text-center">Created Date</th>
-                <th className="border border-tableBorder text-center">Email</th>
-                <th className="border border-tableBorder text-center"></th>
+                <th className="border border-tableBorder text-center py-2">
+                  Created Date
+                </th>
+                <th className="border border-tableBorder text-center py-2">
+                  Email
+                </th>
+                <th className="border border-tableBorder text-center py-2"></th>
               </tr>
             </thead>
 
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id?.$oid}>
-                  <td className="border border-tableBorder pl-1">
-                    <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-1"
-                        type="checkbox"
-                        className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
-                      <label
-                        htmlFor="checkbox-table-search-1"
-                        className="sr-only"
-                      >
-                        checkbox
-                      </label>
-                    </div>
-                  </td>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.CustomerID}
+                    {customer.formattedCustomerID}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
                     {customer.NationalID}
@@ -232,6 +240,10 @@ const CustomerRegister: React.FC = () => {
                   <td className="border border-tableBorder pl-1">
                     {customer.ContactNo}
                   </td>
+                  <td className="border border-tableBorder pl-1">
+                    {new Date(customer.createdDate).toLocaleDateString('en-GB')}
+                  </td>
+
                   <td className="border border-tableBorder pl-1">
                     {customer.Email}
                   </td>
