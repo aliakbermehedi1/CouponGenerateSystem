@@ -26,9 +26,8 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
 
   const [totalValueSR, setTotalValueSR] = useState<number>(0); //Total Value SR here
 
-  const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<
-    Array<string | number>
-  >([]);
+  const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<number[]>([]);
+
   //checkbox
 
   const handleBackClick = () => {
@@ -41,7 +40,6 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]); //check checkbox select or not
-
 
   //state for search query
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -146,17 +144,17 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       : true,
   );
 
-
-
   const calculateTotal = () => {
+    console.log("filteredCustomers:", filteredCustomers);
+  console.log("selectedInvoiceIds:", selectedInvoiceIds);
     let total = 0;
     filteredCustomers.forEach((customer) => {
-      if (selectedInvoiceIds.includes(customer._id)) {
+      if (selectedInvoiceIds.includes(customer.invoiceId)) {  // Check against invoiceId instead of _id
         total += customer.PurchaseAmount / 2;
       }
     });
     return total;
-  };
+  };  
 
   // Use useEffect to update the totalValueSR whenever filteredCustomers or selectedInvoiceIds change
   useEffect(() => {
@@ -165,25 +163,28 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
     setTotalValueSR(newValue);
   }, [filteredCustomers, selectedInvoiceIds]);
 
-
   // start handle checkbiox
   const handleCheckboxClick = (id: string | number) => {
-    const stringifiedId = String(id); // Convert to string for consistent comparison
+    const numId = Number(id); // Convert to number
     
-    if (selectedCheckboxes.includes(stringifiedId)) {
-      setSelectedCheckboxes((prevIds) => prevIds.filter((item) => item !== stringifiedId));
+    if (selectedCheckboxes.includes(String(numId))) {
+      setSelectedCheckboxes((prevIds) =>
+        prevIds.filter((item) => item !== String(numId)),
+      );
     } else {
-      setSelectedCheckboxes((prevIds) => [...prevIds, stringifiedId]);
+      setSelectedCheckboxes((prevIds) => [...prevIds, String(numId)]);
     }
   
-    if (selectedInvoiceIds.includes(stringifiedId)) {
-      setSelectedInvoiceIds((prevIds) => prevIds.filter((item) => item !== stringifiedId));
+    if (selectedInvoiceIds.includes(numId)) {
+      setSelectedInvoiceIds((prevIds) =>
+        prevIds.filter((item) => item !== numId),
+      );
     } else {
-      setSelectedInvoiceIds((prevIds) => [...prevIds, stringifiedId]);
+      setSelectedInvoiceIds((prevIds) => [...prevIds, numId]);
     }
   };
   
-  
+
   // end handle checkbiox
   return (
     <>
@@ -245,16 +246,19 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
 
             {/* generate coupon button */}
             <Button
-  className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-danger py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
-  onClick={() => setShowDialog1(true)}
-  disabled={selectedCheckboxes.length === 0}
-  style={{ outline: 'none', borderColor: 'transparent !important' }}
->
-  <span>
-    <i className="pi pi-tag font-semibold" style={{ fontSize: '12px' }}></i>
-  </span>
-  Generate Coupon
-</Button>
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-danger py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={() => setShowDialog1(true)}
+              disabled={selectedCheckboxes.length === 0}
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-tag font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              Generate Coupon
+            </Button>
 
             {/* end generate */}
           </div>
@@ -331,12 +335,13 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                 <tr key={customer._id?.$oid}>
                   <td className="border border-tableBorder pl-1">
                     <div className="flex items-center">
-                      <input
-                        id="checkbox-table-search-1"
-                        type="checkbox"
-                        onChange={() => handleCheckboxClick(customer._id)} // Assuming _id represents invoiceId
-                        className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      />
+                    <input
+  id={`checkbox-table-search-${customer._id}`} // Assuming customer._id is the identifier
+  type="checkbox"
+  onChange={() => handleCheckboxClick(customer.invoiceId)} // Pass the invoiceId directly
+  className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+/>
+
                       <label
                         htmlFor="checkbox-table-search-1"
                         className="sr-only"
@@ -428,7 +433,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       <Dialog
         visible={showConfirmationDialog}
         onHide={() => setShowConfirmationDialog(false)}
-        header="Are you sure to delete customer?"
+        header="Are you sure to delete Invoice?"
         footer={
           <div className="flex items-center justify-center">
             <Button
@@ -465,6 +470,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
           nationalID={NationalID}
           customerID={CustomerIDQuery}
           totalValueSR={totalValueSR}
+          selectedInvoiceIds={selectedInvoiceIds}  // Add this prop
         />
       </Dialog>
       {/* generate coupon dialog end */}

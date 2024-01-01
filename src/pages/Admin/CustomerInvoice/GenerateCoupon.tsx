@@ -8,21 +8,23 @@ type CustomerInvoiceInsertProps = {
   customerID: string | null; // Change the type here
   customerName: string | null; // Change the type here
   nationalID: string | null; // Change the type here
-  totalValueSR: number | null; 
+  totalValueSR: number | null;
+  selectedInvoiceIds: number[]; // Make sure it's an array of numbers
 };
 
-
 const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
-    onHide,
-    fetchCustomers,
-    customerName,
-    nationalID,
-    customerID,
-    totalValueSR
+  onHide,
+  fetchCustomers,
+  customerName,
+  nationalID,
+  customerID,
+  totalValueSR,
+  selectedInvoiceIds, // Add this prop
 }) => {
-    const [itemCodeID, setItemCodeID] = useState<any[]>([]); //Dropdown State
-    
-    console.log("totalValueSR", totalValueSR)
+  const [itemCodeID, setItemCodeID] = useState<any[]>([]); //Dropdown State
+
+  console.log('totalValueSR', totalValueSR);
+  console.log('selectedInvoiceIds', selectedInvoiceIds);
   const [formData, setFormData] = useState({
     ItemCodeID: '',
   });
@@ -37,39 +39,79 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
     }));
   };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   // Check if there's at least one item in itemCodeID array
+  //   if (itemCodeID.length > 0) {
+  //     // Extract the ItemCode value as a string from the first item
+  //     const extractedItemCode = itemCodeID[0].ItemCode.toString();
+
+  //     try {
+  //       const response = await axios.post(
+  //         'http://localhost:8080/api/CustomerInformation/CheckDataProperlyInsertOrNot',
+  //         {
+  //           ...formData,
+  //           CustomerID: customerID,
+  //           ItemCodeID: extractedItemCode, // Directly using the extractedItemCode as a string
+  //         },
+  //       );
+
+  //       if (response.data.success) {
+  //         toast.success('Invoice inserted successfully!', {
+  //           // ... (toast settings)
+  //         });
+
+  //         onHide();
+  //         fetchCustomers();
+  //       }
+  //     } catch (error) {
+  //       console.error('Error inserting invoice:', error);
+  //       // Handle error scenario
+  //     }
+  //   } else {
+  //     console.error('itemCodeID array is empty!');
+  //     // Handle the case where the itemCodeID array is empty
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if there's at least one item in itemCodeID array
-    if (itemCodeID.length > 0) {
-      // Extract the ItemCode value as a string from the first item
-      const extractedItemCode = itemCodeID[0].ItemCode.toString();
-
+    // Check if there's at least one item in selectedInvoiceIds array
+    if (selectedInvoiceIds.length > 0) {
       try {
-        const response = await axios.post(
-          'http://localhost:8080/api/CustomerInformation/CheckDataProperlyInsertOrNot',
+        const response = await axios.put(
+          'http://localhost:8080/api/CustomerInformation/DeleteInvoices',
           {
-            ...formData,
-            CustomerID: customerID,
-            ItemCodeID: extractedItemCode, // Directly using the extractedItemCode as a string
+            invoiceIds: selectedInvoiceIds, // Pass the selectedInvoiceIds array to the backend
           },
         );
 
         if (response.data.success) {
-          toast.success('Invoice inserted successfully!', {
+          toast.success('Generate Coupon successfully!', {
             // ... (toast settings)
           });
+
+          // Add any additional logic you want to execute after successful deletion
+          // ...
 
           onHide();
           fetchCustomers();
         }
       } catch (error) {
-        console.error('Error inserting invoice:', error);
+        console.error('Error deleting invoices:', error);
         // Handle error scenario
+        toast.error('Error deleting invoices!', {
+          // ... (toast settings)
+        });
       }
     } else {
-      console.error('itemCodeID array is empty!');
-      // Handle the case where the itemCodeID array is empty
+      console.error('selectedInvoiceIds array is empty!');
+      // Handle the case where the selectedInvoiceIds array is empty
+      toast.warn('No invoices selected to delete!', {
+        // ... (toast settings)
+      });
     }
   };
 
@@ -178,9 +220,9 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
           {/* Submit Button */}
           <button
             type="submit"
-            className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray mt-4"
+            className="flex w-full justify-center rounded bg-danger p-3 font-medium text-gray mt-4"
           >
-            Submit
+            Generate Coupon
           </button>
         </form>
       </div>
