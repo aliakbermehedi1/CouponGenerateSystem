@@ -1,23 +1,40 @@
-import { Suspense, lazy, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify'; // <-- Import the correct component
-import 'react-toastify/dist/ReactToastify.css'; // <-- Import the stylesheet for styling
-
-import ECommerce from './pages/Dashboard/ECommerce';
-import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
+import React, { Suspense, useEffect } from 'react';
+import { Route, Routes, Navigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Loader from './common/Loader';
 import routes from './routes';
-import 'primeicons/primeicons.css';
+import SignIn from './pages/Authentication/SignIn';
+import DefaultLayout from './layout/DefaultLayout';
+import { isValidToken } from './utility';
+import { useNavigate } from 'react-router-dom';
 
-import 'primereact/resources/themes/tailwind-light/theme.css';
-import React from 'react';
-const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
+import ECommerce from './pages/Dashboard/ECommerce';
 
-function App() {
-  const [loading, setLoading] = useState<boolean>(true);
+const App: React.FC<{}> = () => {
+  const navigate = useNavigate();
+
+  const [isInitialLoad, setIsInitialLoad] = React.useState<boolean>(true);
 
   useEffect(() => {
+    const tokenIsValid = isValidToken();
+
+    // Only perform navigation on the initial load
+    if (isInitialLoad) {
+      if (tokenIsValid) {
+        navigate('/');
+      } else {
+        navigate('/auth/signin');
+      }
+      // Set isInitialLoad to false after the initial navigation
+      setIsInitialLoad(false);
+    }
+  }, [navigate, isInitialLoad]);
+
+  const [loading, setLoading] = React.useState<boolean>(true);
+
+  useEffect(() => {
+    // Simulate a loading time for demonstration purposes
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
@@ -27,15 +44,21 @@ function App() {
         <Loader />
       ) : (
         <>
-          <ToastContainer /> {/* <-- Place the ToastContainer here */}
-          
+          {/* Toast container for notifications */}
+          <ToastContainer />
+
+          {/* Define application routes */}
           <Routes>
+            {/* Set SignIn as the initial route */}
             <Route path="/auth/signin" element={<SignIn />} />
-            <Route path="/auth/signup" element={<SignUp />} />
+
+            {/* Nested route with DefaultLayout as the layout */}
             <Route element={<DefaultLayout />}>
               <Route index element={<ECommerce />} />
-              {routes.map((routes, index) => {
-                const { path, component: Component } = routes;
+
+              {/* Map over routes and dynamically generate nested routes */}
+              {routes.map((route, index) => {
+                const { path, component: Component } = route;
                 return (
                   <Route
                     key={index}
@@ -54,6 +77,6 @@ function App() {
       )}
     </div>
   );
-}
+};
 
 export default App;

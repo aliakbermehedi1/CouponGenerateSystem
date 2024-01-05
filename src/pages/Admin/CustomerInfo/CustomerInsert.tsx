@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
-type CustomerInsertProps = {
+interface CustomerInsertProps {
   onHide: () => void;
   fetchCustomers: () => void;
-};
-
-const CustomerInsert: React.FC<CustomerInsertProps> = ({ onHide, fetchCustomers }) => {
+}
+const CustomerInsert: React.FC<CustomerInsertProps> = ({
+  onHide,
+  fetchCustomers,
+}) => {
   const [formData, setFormData] = useState({
     CustomerName: '',
     NationalID: '',
@@ -27,19 +29,19 @@ const CustomerInsert: React.FC<CustomerInsertProps> = ({ onHide, fetchCustomers 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       console.log('all data: ', formData);
       const response = await axios.post(
         'http://localhost:8080/api/CustomerInformation/InsertCustomer',
         formData,
       );
-  
+
       if (response.data.success) {
         console.log('Customer inserted successfully!', response.data);
         // Display toast message
         toast.success('Customer inserted successfully!', {
-          position: "top-right",
+          position: 'top-right',
           autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
@@ -47,7 +49,7 @@ const CustomerInsert: React.FC<CustomerInsertProps> = ({ onHide, fetchCustomers 
           draggable: true,
           progress: undefined,
         });
-  
+
         // Optionally, reset the form or show a success message
         onHide();
         fetchCustomers();
@@ -57,7 +59,6 @@ const CustomerInsert: React.FC<CustomerInsertProps> = ({ onHide, fetchCustomers 
       // Handle error scenario
     }
   };
-  
 
   return (
     <div className="">

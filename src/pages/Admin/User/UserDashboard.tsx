@@ -1,17 +1,17 @@
+import Breadcrumb from '../../../components/Breadcrumb';
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Button } from 'primereact/button';
-import Breadcrumb from '../../components/Breadcrumb';
 import { Dialog } from 'primereact/dialog';
-import CustomerInsert from './CustomerInfo/CustomerInsert';
-import CustomerUpdate from './CustomerInfo/CustomerUpdate';
-import { toast } from 'react-toastify'; // Import the toast function
-import * as XLSX from 'xlsx';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import UserInsert from './UserInsert';
+// import BranchInsert from './BranchInsert';
+// import BranchUpdate from './BranchUpdate';
 
-const CustomerRegister: React.FC = () => {
+const UserDashboard: React.FC = () => {
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
-  const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
+  const [selectedUser, setSelectedUser] = useState<any>(null); // Initially set to null
 
   //state for search query
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -19,28 +19,26 @@ const CustomerRegister: React.FC = () => {
   // delete
   const [showConfirmationDialog, setShowConfirmationDialog] =
     useState<boolean>(false);
-  const [customerIdToDelete, setCustomerIdToDelete] = useState<number | null>(
-    null,
-  );
+  const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
 
-  const [customers, setCustomers] = useState<any[]>([]);
+  const [userData, setUserData] = useState<any[]>([]);
 
   // Fetch customers from the API
-  const fetchCustomers = async () => {
+  const fetchUser = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/CustomerInformation/GetCustomer',
+        'http://localhost:8080/api/userInfo/GetUsers',
       );
       if (response.data.success) {
-        setCustomers(response.data.data);
+        setUserData(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      console.error('Error fetching roll:', error);
     }
   };
 
   useEffect(() => {
-    fetchCustomers();
+    fetchUser();
   }, []);
 
   const onHideDialog = (): void => {
@@ -48,32 +46,17 @@ const CustomerRegister: React.FC = () => {
     setShowDialog1(false);
   };
 
-  // start excle
-  const exportToExcel = () => {
-    // Create a new workbook
-    const wb = XLSX.utils.book_new();
-
-    // Convert customers array to worksheet
-    const ws = XLSX.utils.json_to_sheet(customers);
-
-    // Add worksheet to workbook
-    XLSX.utils.book_append_sheet(wb, ws, 'Customers');
-
-    // Save workbook as Excel file with .xls extension
-    XLSX.writeFile(wb, 'customers.xls');
-  };
-  // end excle
   // handle Update or Edit
-  const handleEditClick = async (customerId: string) => {
+  const handleEditClick = async (UserID: string) => {
+    console.log('UserID', UserID); // Check if this logs the correct UserID
     try {
-      // const convertedId = new ObjectId(customerId);
       const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
+        `http://localhost:8080/api/branch/GetBranchById/${UserID}`,
       );
       if (response.data) {
         // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
         // For example:
-        setSelectedCustomer(response.data);
+        setSelectedUser(response.data);
         setShowDialog1(true);
       } else {
         console.error('Customer data not found');
@@ -84,20 +67,20 @@ const CustomerRegister: React.FC = () => {
   };
 
   // handle Delete
-  const handleDeleteClick = (customerId: number) => {
-    setCustomerIdToDelete(customerId); // Store the customerId that needs to be deleted
+  const handleDeleteClick = (branch: number) => {
+    setUserIdToDelete(branch); // Store the customerId that needs to be deleted
     setShowConfirmationDialog(true); // Show the confirmation dialog
   };
 
   const confirmDelete = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/CustomerInformation/DeleteCustomer',
-        { CustomerID: customerIdToDelete },
+        'http://localhost:8080/api/branch/DeleteBranch',
+        { UserID: userIdToDelete },
       );
 
       if (response.data.success) {
-        fetchCustomers();
+        fetchUser();
         setShowConfirmationDialog(false); // Close the confirmation dialog
 
         // Display a success toast message
@@ -119,7 +102,7 @@ const CustomerRegister: React.FC = () => {
   };
 
   // Step 2: Modify rendering to filter customers based on search
-  const filteredCustomers = customers.filter((customer) =>
+  const filteredCustomers = userData.filter((customer) =>
     searchQuery
       ? Object.values(customer)
           .join('') // Concatenate all values of a customer object to a string
@@ -130,7 +113,7 @@ const CustomerRegister: React.FC = () => {
 
   return (
     <>
-      <Breadcrumb pageName="Customer Dashboard" />
+      <Breadcrumb pageName="User Dashboard" />
 
       <div className="text-sm">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
@@ -147,19 +130,6 @@ const CustomerRegister: React.FC = () => {
                 ></i>
               </span>
               NEW
-            </Button>
-            <Button
-              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-exportButtonColor py-2 px-6 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-3"
-              onClick={exportToExcel}
-              style={{ outline: 'none', borderColor: 'transparent !important' }}
-            >
-              <span>
-                <i
-                  className="pi pi-download font-semibold"
-                  style={{ fontSize: '12px' }}
-                ></i>
-              </span>
-              EXPORT
             </Button>
           </div>
 
@@ -198,60 +168,53 @@ const CustomerRegister: React.FC = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th className="border border-tableBorder text-center py-2">
-                  Customer ID
+                  User ID
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  National ID
+                  User Name
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  Customer Name
+                  Branch Name
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  Customer Address
+                  Roll Name
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  Contact No.
+                  LoginID
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  Created Date
+                  Password
                 </th>
-                <th className="border border-tableBorder text-center py-2">
-                  Email
-                </th>
-                <th className="border border-tableBorder text-center py-2"></th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredCustomers.map((customer) => (
-                <tr key={customer._id?.$oid}>
+              {filteredCustomers.map((user) => (
+                <tr key={user.UserID}>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.formattedCustomerID}
+                    {user.UserID}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.NationalID}
+                    {user.UserName}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {customer.CustomerName}
+                    {user.BranchName}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {customer.CustomerAddress}
+                    {user.RollName}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {customer.ContactNo}
+                    {user.LoginID}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {new Date(customer.createdDate).toLocaleDateString('en-GB')}
+                    {user.Password}
                   </td>
 
-                  <td className="border border-tableBorder pl-1">
-                    {customer.Email}
-                  </td>
                   <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
-                        onClick={() => handleEditClick(customer.CustomerID)}
+                        onClick={() => handleEditClick(user.UserID)} // Ensure this is correct
                       >
                         <span>
                           <i
@@ -267,7 +230,7 @@ const CustomerRegister: React.FC = () => {
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
-                        onClick={() => handleDeleteClick(customer.CustomerID)}
+                        onClick={() => handleDeleteClick(user.UserID)}
                       >
                         <span>
                           <i
@@ -275,7 +238,6 @@ const CustomerRegister: React.FC = () => {
                             style={{ fontSize: '12px' }}
                           ></i>
                         </span>
-                        Delete
                       </Button>
                     </div>
                   </td>
@@ -291,13 +253,13 @@ const CustomerRegister: React.FC = () => {
         keepInViewport={false}
         className="custom-dialog"
         blockScroll
-        header={'Customer Information Entry'}
+        header={'User Entry'}
         visible={showDialog}
         style={{ width: '40vw' }}
         onHide={onHideDialog}
         id="fname"
       >
-        <CustomerInsert onHide={onHideDialog} fetchCustomers={fetchCustomers} />
+        <UserInsert onHide={onHideDialog} fetchUser={fetchUser} />
       </Dialog>
 
       {/* start update dualog */}
@@ -305,23 +267,23 @@ const CustomerRegister: React.FC = () => {
         keepInViewport={false}
         className="custom-dialog"
         blockScroll
-        header={'Customer Information Update'}
+        header={'Branch Update'}
         visible={showDialog1}
         style={{ width: '40vw' }}
         onHide={onHideDialog}
         id="fname"
       >
-        <CustomerUpdate
+        {/* <BranchUpdate
           onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
-          customerData={selectedCustomer}
-        />
+          fetchUser={fetchUser}
+          userData={selectedUser}
+        /> */}
       </Dialog>
 
       <Dialog
         visible={showConfirmationDialog}
         onHide={() => setShowConfirmationDialog(false)}
-        header="Are you sure to delete customer?"
+        header="Are you sure to delete Branch?"
         footer={
           <div className="flex items-center justify-center">
             <Button
@@ -343,4 +305,4 @@ const CustomerRegister: React.FC = () => {
   );
 };
 
-export default CustomerRegister;
+export default UserDashboard;

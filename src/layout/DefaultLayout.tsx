@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import { Outlet } from 'react-router-dom';
 
-const DefaultLayout = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const DefaultLayout: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
   return (
     <div className="dark:bg-boxdark-2 dark:text-bodydark">

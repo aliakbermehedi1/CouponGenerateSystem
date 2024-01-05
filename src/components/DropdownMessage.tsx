@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+// ... (rest of the imports remain unchanged)
 import UserOne from '../images/user/user-01.png';
 import UserTwo from '../images/user/user-02.png';
 import UserThree from '../images/user/user-03.png';
 import UserFour from '../images/user/user-04.png';
 
-const DropdownMessage = () => {
+const DropdownMessage: React.FC<{}> = () => {
+  // ... (rest of the component remains unchanged)
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -37,6 +39,7 @@ const DropdownMessage = () => {
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
+  // ... (rest of the component remains unchanged)
 
   return (
     <li className="relative" x-data="{ dropdownOpen: false, notifying: true }">

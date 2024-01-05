@@ -1,9 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-
 import UserOne from '../images/user/ali.png';
 
-const DropdownUser = () => {
+interface DropdownUserProps {
+  // Define any props that your component might accept here
+}
+
+const DropdownUser: React.FC<DropdownUserProps> = () => {
+  const userName = localStorage.getItem('UserName'); //Here local storage UserName
+  const branchName = localStorage.getItem('BranchName'); //Here local storage UserName
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const trigger = useRef<any>(null);
@@ -44,14 +49,14 @@ const DropdownUser = () => {
         to="#"
       >
         <span className="hidden text-right lg:block">
-          <span className="block text-sm font-medium text-white dark:text-white">
-            Ali Akber
+          <span className="block text-sm font-medium text-white dark:text-white uppercaseD">
+            {userName}
           </span>
-          <span className="block text-xs text-white">Software Engineer</span>
+          <span className="block text-xs text-white">{branchName}</span>
         </span>
 
         <span className="rounded-full">
-          <img src={UserOne} alt="User" className='rounded-full w-12 h-12' />
+          <img src={UserOne} alt="User" className="rounded-full w-12 h-12" />
         </span>
 
         <svg

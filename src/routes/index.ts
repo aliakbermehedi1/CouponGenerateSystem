@@ -1,6 +1,9 @@
 import { lazy } from 'react';
 import CustomerInvoice from '../pages/Admin/CustomerInvoice';
 import CustomerinvoiceDetails from '../pages/Admin/CustomerInvoice/CustomerinvoiceDetails';
+import RollMasterDashboard from '../pages/Admin/RollMaster/RollMasterDashboard';
+import BranchDashboard from '../pages/Admin/Branch/BranchDashboard';
+import UserDashboard from '../pages/Admin/User/UserDashboard';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -73,6 +76,21 @@ const coreRoutes = [
     path: '/CustomerInvoiceDetails',
     title: 'Customer Invoice Details',
     component: CustomerinvoiceDetails,
+  },
+  {
+    path: '/rollMaster',
+    title: 'Roll Master',
+    component: RollMasterDashboard,
+  },
+  {
+    path: '/branchDashboard',
+    title: 'Branch Dashboard',
+    component: BranchDashboard,
+  },
+  {
+    path: '/userDashboard',
+    title: 'User Dashboard',
+    component: UserDashboard,
   },
 ];
 
