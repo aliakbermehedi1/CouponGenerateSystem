@@ -145,7 +145,7 @@ const GenerateCouponDashboard: React.FC = () => {
                       <td className="border border-[#6D4222] pl-1 text-center text-editButtonColor font-semibold">
                         <Link
                           to={`/couponPage?GenerateID=${customer.GenerateID}`}
-                          target="_blank"
+                          // target=""
                           rel="noopener noreferrer"
                         >
                           {customer.GenerateNo}
