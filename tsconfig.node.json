@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "target": "ESNext", 
+    "lib": ["ESNext", "DOM", "DOM.Iterable", "ScriptHost", "ES2020"],
+    "esModuleInterop": true,
+    "rootDir": "./src", // Adjust based on your project structure
+    "outDir": "./dist", // Adjust based on your project structure
+    "strict": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "vite.config.ts", // Adjust if needed
+    "src/**/*.ts", 
+    "src/**/*.tsx"
+  ],
+  "exclude": ["node_modules"]
+}
