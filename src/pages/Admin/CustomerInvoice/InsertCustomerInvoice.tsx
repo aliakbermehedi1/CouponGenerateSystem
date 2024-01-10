@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { toast } from 'react-toastify';
 
 type CustomerInvoiceInsertProps = {
   onHide: () => void;
-  fetchCustomers: () => void;
+  fetchCustomersInvoice: () => void;
   customerID: string | null; // Change the type here
   customerName: string | null; // Change the type here
   nationalID: string | null; // Change the type here
@@ -12,10 +12,10 @@ type CustomerInvoiceInsertProps = {
 
 const InsertCustomerInvoice: React.FC<CustomerInvoiceInsertProps> = ({
   onHide,
-  fetchCustomers,
+  fetchCustomersInvoice,
   customerName,
   nationalID,
-  customerID
+  customerID,
 }) => {
   const [formData, setFormData] = useState({
     CustomerName: customerName,
@@ -46,25 +46,90 @@ const InsertCustomerInvoice: React.FC<CustomerInvoiceInsertProps> = ({
     e.preventDefault();
 
     try {
+      // Retrieve CreatedBy and CreatedFrom from localStorage
+      const createdFrom = localStorage.getItem('BranchName') || '';
+      const createdBy = localStorage.getItem('UserName') || '';
+
       const response = await axios.post(
-        'http://localhost:8080/api/CustomerInformation/InsertInvoice', // Updated endpoint
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformationInvoice/InsertInvoice',
         {
-          ...formData,
-          CustomerID: customerID, // Assuming nationalID is equivalent to CustomerID
+          ...formData, // Assuming you have formData defined somewhere above
+          CustomerID: customerID, // Assuming customerID is defined somewhere above
+          CreatedBy: createdBy,
+          CreatedFrom: createdFrom,
         },
       );
 
       if (response.data.success) {
         toast.success('Invoice inserted successfully!', {
-          // ... (toast settings)
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
         });
 
+        // Assuming onHide and fetchCustomersInvoice are defined somewhere above
         onHide();
-        fetchCustomers();
+        fetchCustomersInvoice();
       }
-    } catch (error) {
-      console.error('Error inserting invoice:', error);
-      // Handle error scenario
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error as AxiosError<any>;
+
+        if (axiosError.response && axiosError.response.data) {
+          const errorMessage =
+            axiosError.response.data.message || 'An error occurred.';
+
+          if (errorMessage.includes('InvoiceNo already exists')) {
+            toast.error(
+              'Duplicate InvoiceNo detected.',
+              {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              },
+            );
+          } else {
+            toast.error(`Failed to insert Invoice! ${errorMessage}`, {
+              position: 'top-right',
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          }
+        } else {
+          toast.error('Failed to insert Invoice!', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      } else {
+        console.error('Error inserting invoice:', error);
+        toast.error('Failed to insert Invoice!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
 

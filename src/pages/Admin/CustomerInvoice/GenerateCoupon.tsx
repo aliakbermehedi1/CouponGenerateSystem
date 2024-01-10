@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 type CustomerInvoiceInsertProps = {
   onHide: () => void;
-  fetchCustomers: () => void;
+  fetchCustomersInvoice: () => void;
   customerID: string | null; // Change the type here
   customerName: string | null; // Change the type here
+  ContactNo: string | null; // Change the type here
+  customerAddress: string | null; // Change the type here
   nationalID: string | null; // Change the type here
   totalValueSR: number | null;
   selectedInvoiceIds: number[]; // Make sure it's an array of numbers
@@ -14,14 +17,21 @@ type CustomerInvoiceInsertProps = {
 
 const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
   onHide,
-  fetchCustomers,
+  fetchCustomersInvoice,
   customerName,
+  customerAddress,
   nationalID,
   customerID,
   totalValueSR,
+  ContactNo,
   selectedInvoiceIds, // Add this prop
 }) => {
   const [itemCodeID, setItemCodeID] = useState<any[]>([]); //Dropdown State
+
+  const [generatedCouponId, setGeneratedCouponId] = useState<string | null>(
+    null,
+  ); //coupon page
+  const navigate = useNavigate();
 
   console.log('totalValueSR', totalValueSR);
   console.log('selectedInvoiceIds', selectedInvoiceIds);
@@ -39,88 +49,89 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
     }));
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   // Check if there's at least one item in itemCodeID array
-  //   if (itemCodeID.length > 0) {
-  //     // Extract the ItemCode value as a string from the first item
-  //     const extractedItemCode = itemCodeID[0].ItemCode.toString();
-
-  //     try {
-  //       const response = await axios.post(
-  //         'http://localhost:8080/api/CustomerInformation/CheckDataProperlyInsertOrNot',
-  //         {
-  //           ...formData,
-  //           CustomerID: customerID,
-  //           ItemCodeID: extractedItemCode, // Directly using the extractedItemCode as a string
-  //         },
-  //       );
-
-  //       if (response.data.success) {
-  //         toast.success('Invoice inserted successfully!', {
-  //           // ... (toast settings)
-  //         });
-
-  //         onHide();
-  //         fetchCustomers();
-  //       }
-  //     } catch (error) {
-  //       console.error('Error inserting invoice:', error);
-  //       // Handle error scenario
-  //     }
-  //   } else {
-  //     console.error('itemCodeID array is empty!');
-  //     // Handle the case where the itemCodeID array is empty
-  //   }
-  // };
-
+  // START Handle Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if there's at least one item in selectedInvoiceIds array
-    if (selectedInvoiceIds.length > 0) {
-      try {
-        const response = await axios.put(
-          'http://localhost:8080/api/CustomerInformation/DeleteInvoices',
-          {
-            invoiceIds: selectedInvoiceIds, // Pass the selectedInvoiceIds array to the backend
-          },
-        );
-
-        if (response.data.success) {
-          toast.success('Generate Coupon successfully!', {
-            // ... (toast settings)
-          });
-
-          // Add any additional logic you want to execute after successful deletion
-          // ...
-
-          onHide();
-          fetchCustomers();
-        }
-      } catch (error) {
-        console.error('Error deleting invoices:', error);
-        // Handle error scenario
-        toast.error('Error deleting invoices!', {
-          // ... (toast settings)
-        });
+    try {
+      // Ensure all necessary fields are present in formData
+      if (
+        !formData.ItemCodeID ||
+        !customerName ||
+        !nationalID ||
+        !customerAddress ||
+        !ContactNo ||
+        !totalValueSR
+      ) {
+        toast.error('Please fill in all required fields.');
+        return;
       }
-    } else {
-      console.error('selectedInvoiceIds array is empty!');
-      // Handle the case where the selectedInvoiceIds array is empty
-      toast.warn('No invoices selected to delete!', {
-        // ... (toast settings)
-      });
+
+      // Prepare the data to be sent to the backend
+      const customerDetail = {
+        ItemCodeID: formData.ItemCodeID,
+        ItemCode: formData.ItemCodeID,
+        CustomerName: customerName,
+        CustomerNationalID: nationalID,
+        CustomerAddress: customerAddress,
+        CustomerContactNo: ContactNo,
+        TotalValueSR: totalValueSR,
+        CreatedFrom: localStorage.getItem('BranchName'), // From local storage
+        GenerateDate: new Date().toISOString(), // Current date and time
+      };
+
+      const couponData = {
+        CustomerDetails: [customerDetail], // Make CustomerDetails an array with the customerDetail object
+      };
+
+      // Send the POST request to insert the generated coupon
+      const response = await axios.post(
+        'https://arabian-hunter-backend.vercel.app/api/generate/InsertGeneratedCoupon',
+        couponData,
+      );
+
+      if (response.data.success) {
+        // Update the generatedCouponId state
+        setGeneratedCouponId(response.data.data.GenerateID.toString());
+        await confirmGenerate();
+      } else {
+        toast.error('Failed to generate coupon.');
+      }
+    } catch (error) {
+      console.error('Error generating coupon:', error);
+      toast.error('Error generating coupon. Please try again.');
     }
   };
+
+  // For Remove from invoice tbale
+
+  const confirmGenerate = async () => {
+    try {
+      const response = await axios.put(
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformationInvoice/GenerateCoupon', // Updated API endpoint
+        { invoiceId: selectedInvoiceIds }, // Ensure this matches the expected payload structure
+      );
+
+      if (generatedCouponId) {
+        console.log('Generated Coupon ID:', generatedCouponId); // Log for debugging
+        navigate(`/couponPage?GenerateID=${generatedCouponId}`);
+      } else {
+        console.error('Failed to generate coupon:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error generating coupon:', error);
+      toast.error('Error generating coupon. Please try again.');
+    }
+  };
+
+  // END Handle Submit
 
   //   Get Dropdown Data
 
   const fetchItemDropdown = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/ItemInformation/GetItems`,
+        `https://arabian-hunter-backend.vercel.app/api/ItemInformation/GetItems`,
       ); // Using template literals here to inject CustomerID
       if (response.data.success) {
         // Assuming that the data returned is an array of customers
@@ -137,12 +148,37 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
 
   //   handle change for drodpown
 
+  // const handleChangeForDropdown = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    // const { name, value } = e.target;
+    // setFormData((prevState) => ({
+    //   ...prevState,
+    //   [name]: value,
+    // }));
+  // };
+
   const handleChangeForDropdown = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    const selectedOption = e.target.options[e.target.selectedIndex];
+
+    console.log('Selected Option Value:', selectedOption.value); // Log selected option value
+    console.log('Selected Option Text:', selectedOption.text); // Log selected option text
+
+    if (selectedOption) {
+      const combinedValue = `${selectedOption.value} - ${
+        selectedOption.text.split(' - ')[3]
+      }`;
+
+      // Log the combined value to verify
+      console.log('Combined Value:', combinedValue);
+
+      // Update the state with the combined value
+      // Update the state with the combined value
+      
+      const { name, value } = e.target;
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   return (
@@ -208,10 +244,9 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
               onChange={handleChangeForDropdown}
               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary"
             >
-              <option value="">Select Item Code</option>
               {itemCodeID.map((item) => (
                 <option key={item._id} value={item.ItemCode}>
-                  {item.ItemCode} - {item.ItemName}
+                  {item.ItemCode} - {item.ItemNameArabic}
                 </option>
               ))}
             </select>
@@ -221,6 +256,7 @@ const GenerateCoupon: React.FC<CustomerInvoiceInsertProps> = ({
           <button
             type="submit"
             className="flex w-full justify-center rounded bg-danger p-3 font-medium text-gray mt-4"
+            onClick={handleSubmit} // Assuming this is where you're calling handleSubmit
           >
             Generate Coupon
           </button>

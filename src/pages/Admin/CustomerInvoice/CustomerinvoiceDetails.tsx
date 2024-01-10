@@ -1,30 +1,37 @@
+import UpdateCustomerInvoice from './UpdateCustomerInvoice';
 import InsertCustomerInvoice from './InsertCustomerInvoice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../../components/Breadcrumb';
 import React, { useState, useEffect } from 'react';
+import GenerateCoupon from './GenerateCoupon';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import GenerateCoupon from './GenerateCoupon';
 
 type CustomerInsertProps = {
   onHide: () => void;
-  fetchCustomers: () => void;
+  fetchCustomersInvoice: () => void;
 };
 
 const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
+  const RollName = localStorage.getItem('RollName'); //Here local storage RollNAme
   const navigate = useNavigate(); // Get the navigate function
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const CustomerIDQuery = searchParams.get('CustomerID');
   const CustomerName = searchParams.get('CustomerName');
+  const CustomerAddress = searchParams.get('CustomerAddress');
   const NationalID = searchParams.get('NationalID');
+  const ContactNo = searchParams.get('ContactNo');
   console.log('CustomerID', CustomerIDQuery);
   console.log('CustomerName', CustomerName);
   console.log('NationalID', NationalID);
+  console.log('ContactNo', ContactNo);
 
   const [totalValueSR, setTotalValueSR] = useState<number>(0); //Total Value SR here
+
+  const [selectedUser, setSelectedUser] = useState<any>(null); // Initially set to null
 
   const [selectedInvoiceIds, setSelectedInvoiceIds] = useState<number[]>([]);
 
@@ -36,7 +43,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
 
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //generate Coupon dialog state
-  //   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
+  const [showDialog2, setShowDialog2] = useState<boolean>(false); //update customer
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
 
   const [selectedCheckboxes, setSelectedCheckboxes] = useState<string[]>([]); //check checkbox select or not
@@ -54,10 +61,10 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const [customers, setCustomers] = useState<any[]>([]);
 
   // Fetch customers from the API
-  const fetchCustomers = async () => {
+  const fetchCustomersInvoice = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetInvoicesByCustomerId/${CustomerIDQuery}`,
+        `https://arabian-hunter-backend.vercel.app/api/CustomerInformationInvoice/GetInvoicesByCustomerId/${CustomerIDQuery}`,
       ); // Using template literals here to inject CustomerID
       if (response.data.success) {
         // Assuming that the data returned is an array of customers
@@ -69,7 +76,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   };
 
   useEffect(() => {
-    fetchCustomers();
+    fetchCustomersInvoice();
   }, []); // This effect will run only once when the component mounts
 
   console.log('fetch data here', customers);
@@ -77,25 +84,24 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const onHideDialog = (): void => {
     setShowDialog(false);
     setShowDialog1(false);
+    setShowDialog2(false);
   };
 
   // handle Update or Edit
-  const handleEditClick = async (customerId: string) => {
+  const handleEditClick = async (invoiceId: string) => {
+    console.log('invoiceId', invoiceId); // Check if this logs the correct invoiceId
     try {
-      // const convertedId = new ObjectId(customerId);
       const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
+        `https://arabian-hunter-backend.vercel.app/api/CustomerInformationInvoice/GetInvoiceById/${invoiceId}`,
       );
       if (response.data) {
-        // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
-        // For example:
-        setSelectedCustomer(response.data);
-        setShowDialog(true);
+        setSelectedUser(response.data);
+        setShowDialog2(true);
       } else {
-        console.error('Customer data not found');
+        console.error('User data not found');
       }
     } catch (error) {
-      console.error('Error fetching customer data:', error);
+      console.error('Error fetching User data:', error);
     }
   };
 
@@ -108,12 +114,12 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   const confirmDelete = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/CustomerInformation/DeleteCustomer',
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformationInvoice/DeleteCustomer',
         { CustomerID: customerIdToDelete },
       );
 
       if (response.data.success) {
-        fetchCustomers();
+        fetchCustomersInvoice();
         setShowConfirmationDialog(false); // Close the confirmation dialog
 
         // Display a success toast message
@@ -145,16 +151,17 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   );
 
   const calculateTotal = () => {
-    console.log("filteredCustomers:", filteredCustomers);
-  console.log("selectedInvoiceIds:", selectedInvoiceIds);
+    console.log('filteredCustomers:', filteredCustomers);
+    console.log('selectedInvoiceIds:', selectedInvoiceIds);
     let total = 0;
     filteredCustomers.forEach((customer) => {
-      if (selectedInvoiceIds.includes(customer.invoiceId)) {  // Check against invoiceId instead of _id
+      if (selectedInvoiceIds.includes(customer.invoiceId)) {
+        // Check against invoiceId instead of _id
         total += customer.PurchaseAmount / 2;
       }
     });
     return total;
-  };  
+  };
 
   // Use useEffect to update the totalValueSR whenever filteredCustomers or selectedInvoiceIds change
   useEffect(() => {
@@ -166,7 +173,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
   // start handle checkbiox
   const handleCheckboxClick = (id: string | number) => {
     const numId = Number(id); // Convert to number
-    
+
     if (selectedCheckboxes.includes(String(numId))) {
       setSelectedCheckboxes((prevIds) =>
         prevIds.filter((item) => item !== String(numId)),
@@ -174,7 +181,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
     } else {
       setSelectedCheckboxes((prevIds) => [...prevIds, String(numId)]);
     }
-  
+
     if (selectedInvoiceIds.includes(numId)) {
       setSelectedInvoiceIds((prevIds) =>
         prevIds.filter((item) => item !== numId),
@@ -183,7 +190,6 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       setSelectedInvoiceIds((prevIds) => [...prevIds, numId]);
     }
   };
-  
 
   // end handle checkbiox
   return (
@@ -307,7 +313,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                   </div>
                 </th>
                 <th className="border border-tableBorder text-center">
-                  Customer ID
+                  Created From
                 </th>
                 <th className="border border-tableBorder text-center">
                   National ID
@@ -335,12 +341,12 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                 <tr key={customer._id?.$oid}>
                   <td className="border border-tableBorder pl-1">
                     <div className="flex items-center">
-                    <input
-  id={`checkbox-table-search-${customer._id}`} // Assuming customer._id is the identifier
-  type="checkbox"
-  onChange={() => handleCheckboxClick(customer.invoiceId)} // Pass the invoiceId directly
-  className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-/>
+                      <input
+                        id={`checkbox-table-search-${customer._id}`} // Assuming customer._id is the identifier
+                        type="checkbox"
+                        onChange={() => handleCheckboxClick(customer.invoiceId)} // Pass the invoiceId directly
+                        className="w-4 h-4 mx-2 text-blue-600 bg-gray-100 border-tableBorder rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      />
 
                       <label
                         htmlFor="checkbox-table-search-1"
@@ -351,7 +357,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                     </div>
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {CustomerIDQuery}
+                    {customer.CreatedFrom}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
                     {NationalID}
@@ -361,7 +367,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                   </td>
 
                   <td className="border border-tableBorder pl-1">
-                    {/* {customer.ContactNo} */}
+                    {ContactNo}
                   </td>
                   <td className="border border-tableBorder pl-1">
                     {customer.InvoiceNo}
@@ -373,15 +379,15 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
-                        onClick={() => handleEditClick(customer.CustomerID)}
-                        disabled
+                        onClick={() => handleEditClick(customer.invoiceId)} // Ensure this is correct
+                        disabled={RollName === "User"}
                       >
-                        <span>
+                        {/* <span>
                           <i
                             className="pi pi-pencil font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
-                        </span>
+                        </span> */}
                         EDIT
                       </Button>
                     </div>
@@ -391,6 +397,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
                         onClick={() => handleDeleteClick(customer.CustomerID)}
+                        disabled={RollName === "User"}
                       >
                         <span>
                           <i
@@ -414,7 +421,7 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
         keepInViewport={false}
         className="custom-dialog"
         blockScroll
-        header={'Customer Name'}
+        header={'Customer Invoice'}
         visible={showDialog}
         style={{ width: '40vw' }}
         onHide={onHideDialog}
@@ -422,13 +429,32 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       >
         <InsertCustomerInvoice
           onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
+          fetchCustomersInvoice={fetchCustomersInvoice}
           customerName={CustomerName}
           nationalID={NationalID}
           customerID={CustomerIDQuery}
         />
       </Dialog>
       {/* start update dualog */}
+      <Dialog
+        keepInViewport={false}
+        className="custom-dialog"
+        blockScroll
+        header={'Update Customer Invocie'}
+        visible={showDialog2}
+        style={{ width: '40vw' }}
+        onHide={onHideDialog}
+        id="fname"
+      >
+        <UpdateCustomerInvoice
+          onHide={onHideDialog}
+          fetchInvoice={fetchCustomersInvoice}
+          userData={selectedUser}
+          customerName={CustomerName}
+          nationalID={NationalID}
+          // customerID={CustomerIDQuery}
+        />
+      </Dialog>
 
       <Dialog
         visible={showConfirmationDialog}
@@ -465,12 +491,14 @@ const CustomerinvoiceDetails: React.FC<CustomerInsertProps> = ({ onHide }) => {
       >
         <GenerateCoupon
           onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
+          fetchCustomersInvoice={fetchCustomersInvoice}
           customerName={CustomerName}
+          customerAddress={CustomerAddress}
           nationalID={NationalID}
           customerID={CustomerIDQuery}
+          ContactNo={ContactNo}
           totalValueSR={totalValueSR}
-          selectedInvoiceIds={selectedInvoiceIds}  // Add this prop
+          selectedInvoiceIds={selectedInvoiceIds} // Add this prop
         />
       </Dialog>
       {/* generate coupon dialog end */}

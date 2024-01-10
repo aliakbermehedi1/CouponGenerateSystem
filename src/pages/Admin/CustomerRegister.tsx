@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Button } from 'primereact/button';
-import Breadcrumb from '../../components/Breadcrumb';
-import { Dialog } from 'primereact/dialog';
 import CustomerInsert from './CustomerInfo/CustomerInsert';
 import CustomerUpdate from './CustomerInfo/CustomerUpdate';
-import { toast } from 'react-toastify'; // Import the toast function
+import Breadcrumb from '../../components/Breadcrumb';
+import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import React from 'react';
 
 const CustomerRegister: React.FC = () => {
+  const RollName = localStorage.getItem('RollName'); //Here local storage UserName
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null); // Initially set to null
@@ -29,7 +31,7 @@ const CustomerRegister: React.FC = () => {
   const fetchCustomers = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/CustomerInformation/GetCustomer',
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformation/GetCustomer',
       );
       if (response.data.success) {
         setCustomers(response.data.data);
@@ -68,7 +70,7 @@ const CustomerRegister: React.FC = () => {
     try {
       // const convertedId = new ObjectId(customerId);
       const response = await axios.get(
-        `http://localhost:8080/api/CustomerInformation/GetCustomerById/${customerId}`,
+        `https://arabian-hunter-backend.vercel.app/api/CustomerInformation/GetCustomerById/${customerId}`,
       );
       if (response.data) {
         // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
@@ -92,7 +94,7 @@ const CustomerRegister: React.FC = () => {
   const confirmDelete = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/CustomerInformation/DeleteCustomer',
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformation/DeleteCustomer',
         { CustomerID: customerIdToDelete },
       );
 
@@ -198,7 +200,7 @@ const CustomerRegister: React.FC = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th className="border border-tableBorder text-center py-2">
-                  Customer ID
+                  Created From
                 </th>
                 <th className="border border-tableBorder text-center py-2">
                   National ID
@@ -226,7 +228,7 @@ const CustomerRegister: React.FC = () => {
               {filteredCustomers.map((customer) => (
                 <tr key={customer._id?.$oid}>
                   <td className="border border-tableBorder pl-1 text-center">
-                    {customer.formattedCustomerID}
+                    {customer.CreatedFrom}
                   </td>
                   <td className="border border-tableBorder pl-1 text-center">
                     {customer.NationalID}
@@ -268,6 +270,7 @@ const CustomerRegister: React.FC = () => {
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
                         onClick={() => handleDeleteClick(customer.CustomerID)}
+                        disabled={RollName === 'User'}
                       >
                         <span>
                           <i
@@ -297,7 +300,13 @@ const CustomerRegister: React.FC = () => {
         onHide={onHideDialog}
         id="fname"
       >
-        <CustomerInsert onHide={onHideDialog} fetchCustomers={fetchCustomers} />
+        {/* Add content prop here */}
+        <div>
+          <CustomerInsert
+            onHide={onHideDialog}
+            fetchCustomers={fetchCustomers}
+          />
+        </div>
       </Dialog>
 
       {/* start update dualog */}
@@ -310,12 +319,15 @@ const CustomerRegister: React.FC = () => {
         style={{ width: '40vw' }}
         onHide={onHideDialog}
         id="fname"
+        contentStyle={{ minHeight: '200px' }} // Optionally, you can add some styles if needed
       >
-        <CustomerUpdate
-          onHide={onHideDialog}
-          fetchCustomers={fetchCustomers}
-          customerData={selectedCustomer}
-        />
+        <div>
+          <CustomerUpdate
+            onHide={onHideDialog}
+            fetchCustomers={fetchCustomers}
+            customerData={selectedCustomer}
+          />
+        </div>
       </Dialog>
 
       <Dialog

@@ -4,6 +4,9 @@ import CustomerinvoiceDetails from '../pages/Admin/CustomerInvoice/Customerinvoi
 import RollMasterDashboard from '../pages/Admin/RollMaster/RollMasterDashboard';
 import BranchDashboard from '../pages/Admin/Branch/BranchDashboard';
 import UserDashboard from '../pages/Admin/User/UserDashboard';
+import GenerateCouponDashboard from '../pages/Admin/GenerateCoupon/GenerateCouponDashboard';
+import CouponPage from '../pages/Coupon/CouponPage';
+import UpdateOffer from '../pages/Admin/UpdateOffer/UpdateOffer';
 
 const Calendar = lazy(() => import('../pages/Calendar'));
 const Chart = lazy(() => import('../pages/Chart'));
@@ -91,6 +94,21 @@ const coreRoutes = [
     path: '/userDashboard',
     title: 'User Dashboard',
     component: UserDashboard,
+  },
+  {
+    path: '/generateCouponDashboard',
+    title: 'Generate Dashboard',
+    component: GenerateCouponDashboard,
+  },
+  {
+    path: '/couponPage',
+    title: 'Coupon Page',
+    component: CouponPage,
+  },
+  {
+    path: '/updateOfferData',
+    title: 'Update Offer Data',
+    component: UpdateOffer,
   },
 ];
 

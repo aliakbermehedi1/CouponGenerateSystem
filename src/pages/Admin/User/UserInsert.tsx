@@ -25,7 +25,7 @@ const UserInsert: React.FC<RollInsertProps> = ({ onHide, fetchUser }) => {
   const fetchBranchDropdown = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/branch/GetBranches`,
+        `https://arabian-hunter-backend.vercel.app/api/branch/GetBranches`,
       );
       if (response.data.success) {
         setBranchID(response.data.data);
@@ -38,7 +38,7 @@ const UserInsert: React.FC<RollInsertProps> = ({ onHide, fetchUser }) => {
   const fetchRollDropdown = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/RollMaster/GetRoles`,
+        `https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoles`,
       );
       if (response.data.success) {
         setRollID(response.data.data);
@@ -75,7 +75,7 @@ const UserInsert: React.FC<RollInsertProps> = ({ onHide, fetchUser }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/userInfo/AddUser',
+        'https://arabian-hunter-backend.vercel.app/api/userInfo/AddUser',
         formData,
       );
       if (response.data.success) {

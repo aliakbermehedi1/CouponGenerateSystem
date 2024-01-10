@@ -3,12 +3,27 @@ import React, { useState, useEffect } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import UserInsert from './UserInsert';
-// import BranchInsert from './BranchInsert';
-// import BranchUpdate from './BranchUpdate';
+import axios from 'axios';
+import UserUpdate from './UserUpdate';
 
 const UserDashboard: React.FC = () => {
+
+   // Step 1: Retrieve stored URL from localStorage
+   const storedUrl: string | null = localStorage.getItem('currentUrl');
+
+   // Step 2: Ensure storedUrl is a string or provide a default value
+   const actualStoredUrl: string = storedUrl ?? '';
+ 
+   useEffect(() => {
+     // Step 3: Check if the stored URL matches a specific value
+     if (actualStoredUrl === '/userDashboard') {
+       // Perform actions or logic for the matching condition
+       console.log('Stored URL matches /userDashboard');
+     }
+   }, [actualStoredUrl]); // Include actualStoredUrl in the dependency array if needed
+
+   
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedUser, setSelectedUser] = useState<any>(null); // Initially set to null
@@ -27,7 +42,7 @@ const UserDashboard: React.FC = () => {
   const fetchUser = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/userInfo/GetUsers',
+        'https://arabian-hunter-backend.vercel.app/api/userInfo/GetUsers',
       );
       if (response.data.success) {
         setUserData(response.data.data);
@@ -51,32 +66,30 @@ const UserDashboard: React.FC = () => {
     console.log('UserID', UserID); // Check if this logs the correct UserID
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/branch/GetBranchById/${UserID}`,
+        `https://arabian-hunter-backend.vercel.app/api/userInfo/GetUserById/${UserID}`,
       );
       if (response.data) {
-        // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
-        // For example:
         setSelectedUser(response.data);
         setShowDialog1(true);
       } else {
-        console.error('Customer data not found');
+        console.error('User data not found');
       }
     } catch (error) {
-      console.error('Error fetching customer data:', error);
+      console.error('Error fetching User data:', error);
     }
   };
 
   // handle Delete
-  const handleDeleteClick = (branch: number) => {
-    setUserIdToDelete(branch); // Store the customerId that needs to be deleted
+  const handleDeleteClick = (userId: number) => {
+    setUserIdToDelete(userId); // Store the userId that needs to be deleted
     setShowConfirmationDialog(true); // Show the confirmation dialog
   };
 
   const confirmDelete = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/branch/DeleteBranch',
-        { UserID: userIdToDelete },
+        'https://arabian-hunter-backend.vercel.app/api/userInfo/DeleteUser', // Updated API endpoint
+        { UserID: userIdToDelete }, // Ensure this matches the expected payload structure
       );
 
       if (response.data.success) {
@@ -86,7 +99,7 @@ const UserDashboard: React.FC = () => {
         // Display a success toast message
         toast.success('Deleted Successfully', {
           position: 'top-right',
-          autoClose: 3000, // Close the toast after 3 seconds
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -94,10 +107,10 @@ const UserDashboard: React.FC = () => {
           progress: undefined,
         });
       } else {
-        console.error('Failed to delete customer:', response.data.message);
+        console.error('Failed to delete user:', response.data.message);
       }
     } catch (error) {
-      console.error('Error deleting customer:', error);
+      console.error('Error deleting user:', error);
     }
   };
 
@@ -123,12 +136,12 @@ const UserDashboard: React.FC = () => {
               onClick={() => setShowDialog(true)}
               style={{ outline: 'none', borderColor: 'transparent !important' }}
             >
-              <span>
+              {/* <span>
                 <i
                   className="pi pi-plus font-semibold"
                   style={{ fontSize: '12px' }}
                 ></i>
-              </span>
+              </span> */}
               NEW
             </Button>
           </div>
@@ -207,7 +220,7 @@ const UserDashboard: React.FC = () => {
                     {user.LoginID}
                   </td>
                   <td className="border border-tableBorder pl-1">
-                    {user.Password}
+                    {user.RealPassword}
                   </td>
 
                   <td className="border border-tableBorder pl-1">
@@ -216,12 +229,12 @@ const UserDashboard: React.FC = () => {
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
                         onClick={() => handleEditClick(user.UserID)} // Ensure this is correct
                       >
-                        <span>
+                        {/* <span>
                           <i
                             className="pi pi-pencil font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
-                        </span>
+                        </span> */}
                         EDIT
                       </Button>
                     </div>
@@ -232,12 +245,13 @@ const UserDashboard: React.FC = () => {
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
                         onClick={() => handleDeleteClick(user.UserID)}
                       >
-                        <span>
+                        {/* <span>
                           <i
                             className="pi pi-trash font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
-                        </span>
+                        </span> */}
+                        DELETE
                       </Button>
                     </div>
                   </td>
@@ -267,23 +281,23 @@ const UserDashboard: React.FC = () => {
         keepInViewport={false}
         className="custom-dialog"
         blockScroll
-        header={'Branch Update'}
+        header={'User Update'}
         visible={showDialog1}
         style={{ width: '40vw' }}
         onHide={onHideDialog}
         id="fname"
       >
-        {/* <BranchUpdate
+        <UserUpdate
           onHide={onHideDialog}
           fetchUser={fetchUser}
           userData={selectedUser}
-        /> */}
+        />
       </Dialog>
 
       <Dialog
         visible={showConfirmationDialog}
         onHide={() => setShowConfirmationDialog(false)}
-        header="Are you sure to delete Branch?"
+        header="Are you sure to delete User?"
         footer={
           <div className="flex items-center justify-center">
             <Button

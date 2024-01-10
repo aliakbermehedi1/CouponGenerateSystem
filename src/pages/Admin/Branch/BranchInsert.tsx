@@ -30,7 +30,7 @@ const BranchInsert: React.FC<RollInsertProps> = ({ onHide, fetchBranch }) => {
 
       // Make a POST request to the server to add a new role
       const response = await axios.post(
-        'http://localhost:8080/api/branch/AddBranch',
+        'https://arabian-hunter-backend.vercel.app/api/branch/AddBranch',
         formData, // The data you're sending to the server
       );
 

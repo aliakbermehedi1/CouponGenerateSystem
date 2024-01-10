@@ -26,7 +26,7 @@ const BranchDashboard: React.FC = () => {
   const fetchBranch = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/branch/GetBranches',
+        'https://arabian-hunter-backend.vercel.app/api/branch/GetBranches',
       );
       if (response.data.success) {
         setBranchData(response.data.data);
@@ -50,7 +50,7 @@ const BranchDashboard: React.FC = () => {
     console.log('BranchID', BranchID); // Check if this logs the correct BranchID
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/branch/GetBranchById/${BranchID}`,
+        `https://arabian-hunter-backend.vercel.app/api/branch/GetBranchById/${BranchID}`,
       );
       if (response.data) {
         // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
@@ -74,7 +74,7 @@ const BranchDashboard: React.FC = () => {
   // const confirmDelete = async () => {
   //   try {
   //     const response = await axios.put(
-  //       'http://localhost:8080/api/branch/DeleteBranch',
+  //       'https://arabian-hunter-backend.vercel.app/api/branch/DeleteBranch',
   //       { BranchID: branchIdToDelete },
   //     );
 
@@ -109,7 +109,7 @@ const BranchDashboard: React.FC = () => {
   const confirmDelete = async () => {
     try {
       const response = await axios.put(
-        'http://localhost:8080/api/branch/DeleteBranch',
+        'https://arabian-hunter-backend.vercel.app/api/branch/DeleteBranch',
         { BranchID: branchIdToDelete },
       );
 

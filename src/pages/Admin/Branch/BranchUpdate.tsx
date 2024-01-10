@@ -69,7 +69,7 @@ const BranchUpdate: React.FC<UpdateProps> = ({
 
       // Make a PUT request to update the role
       const response = await axios.put(
-        `http://localhost:8080/api/branch/UpdateBranch/${branchID}`,
+        `https://arabian-hunter-backend.vercel.app/api/branch/UpdateBranch/${branchID}`,
         formData,
       );
 

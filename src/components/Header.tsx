@@ -20,7 +20,7 @@ const Header: React.FC<{
 
       // Make a POST request to the logout endpoint on your server
       const response = await fetch(
-        'http://localhost:8080/api/userInfo/logout',
+        'https://arabian-hunter-backend.vercel.app/api/userInfo/logout',
         {
           method: 'POST',
           headers: {

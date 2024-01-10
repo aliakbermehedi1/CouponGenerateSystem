@@ -22,7 +22,7 @@ const CustomerInvoice: React.FC = () => {
   const fetchCustomers = async () => {
     try {
       const response = await axios.get(
-        'http://localhost:8080/api/CustomerInformation/GetCustomer',
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformation/GetCustomer',
       );
       if (response.data.success) {
         setCustomers(response.data.data);

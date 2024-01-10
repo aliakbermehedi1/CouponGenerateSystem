@@ -27,19 +27,27 @@ const CustomerInsert: React.FC<CustomerInsertProps> = ({
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      console.log('all data: ', formData);
+      // Retrieve UserName and BranchName from localStorage
+      const createdFrom = localStorage.getItem('BranchName') || '';
+      const createdBy = localStorage.getItem('UserName') || '';
+
+      // Add CreatedFrom and CreatedBy to formData
+      const updatedFormData = {
+        ...formData,
+        CreatedFrom: createdFrom,
+        CreatedBy: createdBy,
+      };
+
       const response = await axios.post(
-        'http://localhost:8080/api/CustomerInformation/InsertCustomer',
-        formData,
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformation/InsertCustomer',
+        updatedFormData,
       );
 
       if (response.data.success) {
-        console.log('Customer inserted successfully!', response.data);
-        // Display toast message
         toast.success('Customer inserted successfully!', {
           position: 'top-right',
           autoClose: 3000,
@@ -47,16 +55,52 @@ const CustomerInsert: React.FC<CustomerInsertProps> = ({
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-          progress: undefined,
         });
 
-        // Optionally, reset the form or show a success message
         onHide();
         fetchCustomers();
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error inserting customer:', error);
-      // Handle error scenario
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        if (
+          error.response.data.message.includes(
+            'Customer with the given National ID already exists',
+          )
+        ) {
+          toast.error('Customer National ID already exists!', {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else {
+          toast.error(error.response.data.message, {
+            position: 'top-right',
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      } else {
+        toast.error('Failed to insert Customer!', {
+          position: 'top-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     }
   };
 

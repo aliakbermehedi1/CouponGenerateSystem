@@ -1,13 +1,13 @@
 import Breadcrumb from '../../../components/Breadcrumb';
 import React, { useState, useEffect } from 'react';
 import { Button } from 'primereact/button';
-import { Dialog } from 'primereact/dialog';
-import { toast } from 'react-toastify';
-import RollInsert from './RollInsert';
-import RollEdit from './RollEdit';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import UpdateOfferInsert from './UpdateOfferInsert';
+import { Dialog } from 'primereact/dialog';
 
-const RollMasterDashboard: React.FC = () => {
+const UpdateOffer: React.FC = () => {
+  const RollName = localStorage.getItem('RollName'); //Here local storage UserName
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedRoll, setSelectedRoll] = useState<any>(null); // Initially set to null
@@ -25,20 +25,18 @@ const RollMasterDashboard: React.FC = () => {
   const [rollData, setRollData] = useState<any[]>([]);
 
   // Fetch customers from the API
-  // Construct the API endpoint URL using the environment variable
-
-
   const fetchRolls = async () => {
     try {
-      const response = await axios.get(`https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoles`);
+      const response = await axios.get(
+        'https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoles',
+      );
       if (response.data.success) {
         setRollData(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching rolls:', error);
+      console.error('Error fetching roll:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchRolls();
@@ -47,26 +45,6 @@ const RollMasterDashboard: React.FC = () => {
   const onHideDialog = (): void => {
     setShowDialog(false);
     setShowDialog1(false);
-  };
-
-  // handle Update or Edit
-  const handleEditClick = async (RollID: string) => {
-    console.log('RollID', RollID); // Check if this logs the correct RollID
-    try {
-      const response = await axios.get(
-        `https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoleById/${RollID}`,
-      );
-      if (response.data) {
-        // Here, you can set the customer data to a state and pass it to the CustomerUpdate component.
-        // For example:
-        setSelectedRoll(response.data);
-        setShowDialog1(true);
-      } else {
-        console.error('Customer data not found');
-      }
-    } catch (error) {
-      console.error('Error fetching customer data:', error);
-    }
   };
 
   // Step 2: Modify rendering to filter customers based on search
@@ -79,9 +57,44 @@ const RollMasterDashboard: React.FC = () => {
       : true,
   );
 
+  // handle Delete
+  const handleDeleteClick = (customerId: number) => {
+    setCustomerIdToDelete(customerId); // Store the customerId that needs to be deleted
+    setShowConfirmationDialog(true); // Show the confirmation dialog
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await axios.put(
+        'https://arabian-hunter-backend.vercel.app/api/CustomerInformation/DeleteCustomer',
+        { CustomerID: customerIdToDelete },
+      );
+
+      if (response.data.success) {
+        fetchRolls();
+        setShowConfirmationDialog(false); // Close the confirmation dialog
+
+        // Display a success toast message
+        toast.success('Deleted Successfully', {
+          position: 'top-right',
+          autoClose: 3000, // Close the toast after 3 seconds
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        console.error('Failed to delete customer:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+    }
+  };
+
   return (
     <>
-      <Breadcrumb pageName="Roll Master" />
+      <Breadcrumb pageName="Update Offer Data" />
 
       <div className="text-sm">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
@@ -136,16 +149,10 @@ const RollMasterDashboard: React.FC = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th className="border border-tableBorder text-center py-2">
-                  Roll ID
+                  Item Code
                 </th>
                 <th className="border border-tableBorder text-center py-2">
-                  Roll Name
-                </th>
-                <th className="border border-tableBorder text-center py-2">
-                  Roll Description
-                </th>
-                <th className="border border-tableBorder text-center py-2">
-                  {/* Roll Description */}
+                  Item Arabic Name
                 </th>
               </tr>
             </thead>
@@ -153,9 +160,6 @@ const RollMasterDashboard: React.FC = () => {
             <tbody>
               {filteredRolls.map((roll) => (
                 <tr key={roll.RollID}>
-                  <td className="border border-tableBorder pl-1 text-center">
-                    {roll.RollID}
-                  </td>
                   <td className="border border-tableBorder pl-1 text-center">
                     {roll.RollName}
                   </td>
@@ -166,16 +170,17 @@ const RollMasterDashboard: React.FC = () => {
                   <td className="border border-tableBorder pl-1">
                     <div className="flex justify-center items-center py-2">
                       <Button
-                        className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
-                        onClick={() => handleEditClick(roll.RollID)} // Ensure this is correct
+                        className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
+                        onClick={() => handleDeleteClick(roll.rollID)}
+                        disabled={RollName === 'User'}
                       >
                         <span>
                           <i
-                            className="pi pi-pencil font-semibold"
+                            className="pi pi-trash font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
                         </span>
-                        EDIT
+                        Delete
                       </Button>
                     </div>
                   </td>
@@ -197,28 +202,32 @@ const RollMasterDashboard: React.FC = () => {
         onHide={onHideDialog}
         id="fname"
       >
-        <RollInsert onHide={onHideDialog} fetchRolls={fetchRolls} />
+        <UpdateOfferInsert onHide={onHideDialog} fetchRolls={fetchRolls} />
       </Dialog>
 
-      {/* start update dualog */}
       <Dialog
-        keepInViewport={false}
-        className="custom-dialog"
-        blockScroll
-        header={'Roll Mster Update'}
-        visible={showDialog1}
-        style={{ width: '40vw' }}
-        onHide={onHideDialog}
-        id="fname"
-      >
-        <RollEdit
-          onHide={onHideDialog}
-          fetchRolls={fetchRolls}
-          rollData={selectedRoll}
-        />
-      </Dialog>
+        visible={showConfirmationDialog}
+        onHide={() => setShowConfirmationDialog(false)}
+        header="Are you sure to delete customer?"
+        footer={
+          <div className="flex items-center justify-center">
+            <Button
+              label="No"
+              icon="pi pi-times"
+              className="p-button-text bg-danger text-white py-3 px-8 mr-4 text-lg"
+              onClick={() => setShowConfirmationDialog(false)}
+            />
+            <Button
+              label="Yes"
+              icon="pi pi-check"
+              className="p-button-text bg-success text-white py-3 px-8 mr-4 text-lg"
+              onClick={confirmDelete}
+            />
+          </div>
+        }
+      ></Dialog>
     </>
   );
 };
 
-export default RollMasterDashboard;
+export default UpdateOffer;

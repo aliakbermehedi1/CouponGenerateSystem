@@ -67,7 +67,7 @@ const RollEdit: React.FC<UpdateProps> = ({ onHide, fetchRolls, rollData }) => {
   
       // Make a PUT request to update the role
       const response = await axios.put(
-        `http://localhost:8080/api/RollMaster/UpdateRole/${rollId}`,
+        `https://arabian-hunter-backend.vercel.app/api/RollMaster/UpdateRole/${rollId}`,
         formData
       );
   

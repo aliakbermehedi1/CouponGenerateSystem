@@ -16,7 +16,7 @@ const SignIn: React.FC = () => {
     e.preventDefault();
   
     try {
-      const response = await fetch('http://localhost:8080/api/userInfo/login', {
+      const response = await fetch('https://arabian-hunter-backend.vercel.app/api/userInfo/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,13 +77,13 @@ const SignIn: React.FC = () => {
       <div className="rounded-2xl bg-white shadow-default dark:border-strokedark dark:bg-boxdark flex items-center justify-center">
         {/* ... (rest of your JSX code) */}
 
-        <div className="hidden w-full xl:block xl:w-1/2">
-            <div className="py-17.5 px-32 text-center">
+        <div className="hidden w-full xl:block xl:w-1/2 ">
+            <div className="py-17.5 pr-16 pl-28 text-center">
               <div className="w-full h-full">
                 <img
                   src={Logo}
                   alt="Logo"
-                  className="w-full h-70 -skew-y-1"
+                  className="w-full h-56 -skew-y-1"
                 />
               </div>
             </div>

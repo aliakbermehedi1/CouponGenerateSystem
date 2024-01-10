@@ -1,35 +1,40 @@
-import React, { Suspense, useEffect } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Loader from './common/Loader';
-import routes from './routes';
+import ECommerce from './pages/Dashboard/ECommerce';
+import React, { Suspense, useEffect } from 'react';
 import SignIn from './pages/Authentication/SignIn';
 import DefaultLayout from './layout/DefaultLayout';
-import { isValidToken } from './utility';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
-
-import ECommerce from './pages/Dashboard/ECommerce';
+import { isValidToken } from './utility';
+import Loader from './common/Loader';
+import routes from './routes';
 
 const App: React.FC<{}> = () => {
   const navigate = useNavigate();
 
   const [isInitialLoad, setIsInitialLoad] = React.useState<boolean>(true);
 
-  useEffect(() => {
-    const tokenIsValid = isValidToken();
+useEffect(() => {
+  const tokenIsValid = isValidToken();
 
-    // Only perform navigation on the initial load
-    if (isInitialLoad) {
-      if (tokenIsValid) {
-        navigate('/');
-      } else {
-        navigate('/auth/signin');
-      }
-      // Set isInitialLoad to false after the initial navigation
-      setIsInitialLoad(false);
+  // Only perform navigation on the initial load
+  if (isInitialLoad) {
+    if (!tokenIsValid) {
+      // Navigate to '/auth/signin' if token is invalid
+      navigate('/auth/signin');
+    } else {
+      // Do not navigate to '/' if token is valid and not on initial load
+      // Instead, you can leave it empty or navigate to another default route if needed
+      // navigate('/'); // Commenting this out or removing it will prevent auto-navigation to '/'
     }
-  }, [navigate, isInitialLoad]);
+
+    // Set isInitialLoad to false after the initial navigation
+    setIsInitialLoad(false);
+  }
+}, [navigate, isInitialLoad]);
+
+  
 
   const [loading, setLoading] = React.useState<boolean>(true);
 

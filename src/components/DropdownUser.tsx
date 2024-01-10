@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
-import UserOne from '../images/user/ali.png';
+import { Link, useNavigate } from 'react-router-dom';
+import UserOne from '../images/user/logoImg.png';
 
 interface DropdownUserProps {
   // Define any props that your component might accept here
@@ -39,6 +39,49 @@ const DropdownUser: React.FC<DropdownUserProps> = () => {
     document.addEventListener('keydown', keyHandler);
     return () => document.removeEventListener('keydown', keyHandler);
   });
+
+  // Handle Logout
+  // START LOGOUT
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      // Get the token from localStorage
+      const token = localStorage.getItem('jwtToken'); // Replace with your actual token key
+
+      // Make a POST request to the logout endpoint on your server
+      const response = await fetch(
+        'https://arabian-hunter-backend.vercel.app/api/userInfo/logout',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Attach the token to the Authorization header
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Clear the token from localStorage
+        localStorage.removeItem('jwtToken');
+        localStorage.removeItem('UserName');
+        localStorage.removeItem('BranchName');
+        localStorage.removeItem('RollName');
+        localStorage.removeItem('LoginID');
+
+        // Redirect to the login page or any other page after successful logout
+        navigate('/auth/signin');
+      } else {
+        // Handle logout failure, e.g., show an error message
+        console.error('Failed to logout:', data.message);
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+  // END LOGOUT
 
   return (
     <div className="relative">
@@ -113,7 +156,7 @@ const DropdownUser: React.FC<DropdownUserProps> = () => {
               My Profile
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link
               to="#"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
@@ -133,8 +176,8 @@ const DropdownUser: React.FC<DropdownUserProps> = () => {
               </svg>
               My Contacts
             </Link>
-          </li>
-          <li>
+          </li> */}
+          {/* <li>
             <Link
               to="/settings"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
@@ -158,9 +201,12 @@ const DropdownUser: React.FC<DropdownUserProps> = () => {
               </svg>
               Account Settings
             </Link>
-          </li>
+          </li> */}
         </ul>
-        <button className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+        >
           <svg
             className="fill-current"
             width="22"
