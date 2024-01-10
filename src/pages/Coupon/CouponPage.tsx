@@ -14,6 +14,7 @@ const CouponPage: React.FC = () => {
   useEffect(() => {
     if (generateId) {
       // Fetch coupon data by GenerateID from the API
+      // Fetch coupon data by GenerateID from the API
       axios
         .get(
           `https://arabian-hunter-backend.vercel.app/api/generate/GetGeneratedCouponByGenerateID/${generateId}`,
