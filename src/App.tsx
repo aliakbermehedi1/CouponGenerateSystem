@@ -9,6 +9,10 @@ import { useNavigate } from 'react-router-dom';
 import { isValidToken } from './utility';
 import Loader from './common/Loader';
 import routes from './routes';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 
 const App: React.FC<{}> = () => {
   const navigate = useNavigate();
