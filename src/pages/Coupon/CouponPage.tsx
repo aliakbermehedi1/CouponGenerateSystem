@@ -78,7 +78,7 @@ const CouponPage: React.FC = () => {
         Print
       </Button>
 
-      <div className="w-full bg-[#F1F5F9] mt-4 layout-invoice-content print:!pr-12">
+      <div className="w-full bg-[#F1F5F9] mt-4 layout-invoice-content print:!pr-12 print:!mt-6">
         <div className="flex items-center justify-center">
           <div className="w-[80mm] h-[297mm] bg-white">
             <div className="flex justify-center items-center">
@@ -178,7 +178,7 @@ const CouponPage: React.FC = () => {
                 {couponData?.CustomerDetails?.[0]?.ItemCode}
               </p>
               <p className="text-center text-black mt-4 border p-1 font-bold">
-                Coupon Code: {couponData?.GenerateNo}
+                Coupon Code: <br/>{couponData?.GenerateNo}
               </p>
               <p className="text-center text-black mt-1">USE IT ANY BRANCH</p>
               <p className="text-center text-black mt-2 border p-1 font-bold">
