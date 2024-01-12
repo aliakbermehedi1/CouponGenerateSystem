@@ -78,7 +78,7 @@ const CouponPage: React.FC = () => {
         Print
       </Button>
 
-      <div className="w-full bg-[#F1F5F9] mt-4 layout-invoice-content">
+      <div className="w-full bg-[#F1F5F9] mt-4 layout-invoice-content print:!pr-4">
         <div className="flex items-center justify-center">
           <div className="w-[80mm] h-[297mm] bg-white">
             <div className="flex justify-center items-center">
