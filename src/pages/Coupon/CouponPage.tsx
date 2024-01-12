@@ -1,11 +1,13 @@
+import { useLocation, useNavigate } from 'react-router-dom';
 import QRImage from '../../images/QR_Code/QRimage.png';
 import Breadcrumb from '../../components/Breadcrumb';
 import React, { useState, useEffect } from 'react';
 import logo from '../../images/logo/mainLogo.png';
-import { useLocation } from 'react-router-dom';
+import { Button } from 'primereact/button';
 import axios from 'axios';
 
 const CouponPage: React.FC = () => {
+  const navigate = useNavigate(); // Get the navigate function
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const generateId = queryParams.get('GenerateID');
@@ -41,16 +43,40 @@ const CouponPage: React.FC = () => {
     window.print();
   };
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Coupon Page" />
 
-      <button
-        onClick={print}
-        className="bg-editButtonColor text-white py-2 px-4 rounded-md"
+      <Button
+        className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+        onClick={handleBackClick} // Use the handleBackClick function here
+        style={{ outline: 'none', borderColor: 'transparent !important' }}
       >
+        <span>
+          <i
+            className="pi pi-arrow-left font-semibold"
+            style={{ fontSize: '12px' }}
+          ></i>
+        </span>
+        BACK
+      </Button>
+
+      <Button
+        onClick={print}
+        className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+      >
+        <span>
+          <i
+            className="pi pi-print font-semibold"
+            style={{ fontSize: '12px' }}
+          ></i>
+        </span>
         Print
-      </button>
+      </Button>
 
       <div className="w-full bg-[#F1F5F9] mt-4 layout-invoice-content">
         <div className="flex items-center justify-center">
@@ -85,42 +111,58 @@ const CouponPage: React.FC = () => {
                     <td className="">DATE</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{new Date().toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
+                      <p className="text-right">
+                        {new Date().toLocaleDateString('en-US', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                        })}
+                      </p>
                     </td>
                   </tr>
                   <tr>
                     <td className="">Created From</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{couponData?.CustomerDetails?.[0]?.CreatedFrom}</p>
+                      <p className="text-right">
+                        {couponData?.CustomerDetails?.[0]?.CreatedFrom}
+                      </p>
                     </td>
                   </tr>
                   <tr>
                     <td className="w-28">Customer Name</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{couponData?.CustomerDetails?.[0]?.CustomerName}</p>
+                      <p className="text-right">
+                        {couponData?.CustomerDetails?.[0]?.CustomerName}
+                      </p>
                     </td>
                   </tr>
                   <tr>
                     <td className="">National ID</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{couponData?.CustomerDetails?.[0]?.CustomerNationalID}</p>
+                      <p className="text-right">
+                        {couponData?.CustomerDetails?.[0]?.CustomerNationalID}
+                      </p>
                     </td>
                   </tr>
                   <tr>
                     <td className="">Contract No</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{couponData?.CustomerDetails?.[0]?.CustomerContactNo}</p>
+                      <p className="text-right">
+                        {couponData?.CustomerDetails?.[0]?.CustomerContactNo}
+                      </p>
                     </td>
                   </tr>
                   <tr>
                     <td className="">Address</td>
                     <td className="w-2">:</td>
                     <td>
-                      <p className="text-right">{couponData?.CustomerDetails?.[0]?.CustomerAddress}</p>
+                      <p className="text-right">
+                        {couponData?.CustomerDetails?.[0]?.CustomerAddress}
+                      </p>
                     </td>
                   </tr>
                 </tbody>
@@ -132,7 +174,9 @@ const CouponPage: React.FC = () => {
               <p className="text-center text-black mt-2 underline">
                 Target Item Data
               </p>
-              <p className="text-center text-black">{couponData?.CustomerDetails?.[0]?.ItemCode}</p>
+              <p className="text-center text-black">
+                {couponData?.CustomerDetails?.[0]?.ItemCode}
+              </p>
               <p className="text-center text-black mt-4 border p-1 font-bold">
                 Coupon Code: {couponData?.GenerateNo}
               </p>

@@ -96,6 +96,15 @@ const UpdateOffer: React.FC = () => {
     <>
       <Breadcrumb pageName="Update Offer Data" />
 
+      <p className="text-center bg-danger text-white py-4 mb-6 text-2xl font-bold">
+        (Not Developed Yet)
+        <span>
+          <i
+            className="pi pi-ban font-semibold pl-4"
+            style={{ fontSize: '20px' }}
+          ></i>
+        </span>
+      </p>
       <div className="text-sm">
         <div className="flex items-center justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
           <div className="ml-1">

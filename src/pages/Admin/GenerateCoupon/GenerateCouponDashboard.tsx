@@ -67,12 +67,29 @@ const GenerateCouponDashboard: React.FC = () => {
     navigate(`/couponPage/GenerateID=${customer.GenerateID}`);
   };
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Generate Coupon Dashboard" />
 
       <div className="text-sm">
-        <div className="flex items-center justify-end flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
+        <div className="flex justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
+          <Button
+            className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+            onClick={handleBackClick} // Use the handleBackClick function here
+            style={{ outline: 'none', borderColor: 'transparent !important' }}
+          >
+            <span>
+              <i
+                className="pi pi-arrow-left font-semibold"
+                style={{ fontSize: '12px' }}
+              ></i>
+            </span>
+            BACK
+          </Button>
           <div className="relative mx-8 mr-4">
             <input
               type="text"

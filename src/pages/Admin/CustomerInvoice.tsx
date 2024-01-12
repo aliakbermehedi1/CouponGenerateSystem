@@ -37,10 +37,20 @@ const CustomerInvoice: React.FC = () => {
   }, []);
 
   // handle Invoice
-  const handleInvoiceClick = (customerId: string, CustomerName: string, NationalID: string, CustomerAddress: String, ContactNo: String, Email: String, formattedCustomerID: String) => {
+  const handleInvoiceClick = (
+    customerId: string,
+    CustomerName: string,
+    NationalID: string,
+    CustomerAddress: String,
+    ContactNo: String,
+    Email: String,
+    formattedCustomerID: String,
+  ) => {
     try {
       // Directly navigate to the desired route with the CustomerID as a query parameter
-      navigate(`/CustomerInvoiceDetails?CustomerID=${customerId}&CustomerName=${CustomerName}&NationalID=${NationalID}&CustomerAddress=${CustomerAddress}&ContactNo=${ContactNo}&Email=${Email}&formattedCustomerID=${formattedCustomerID}`);
+      navigate(
+        `/CustomerInvoiceDetails?CustomerID=${customerId}&CustomerName=${CustomerName}&NationalID=${NationalID}&CustomerAddress=${CustomerAddress}&ContactNo=${ContactNo}&Email=${Email}&formattedCustomerID=${formattedCustomerID}`,
+      );
     } catch (error) {
       console.error('Error navigating to CustomerInvoiceDetails:', error);
     }
@@ -56,27 +66,31 @@ const CustomerInvoice: React.FC = () => {
       : true,
   );
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Customer Invoice" />
 
       <div className="text-sm">
-        <div className="flex items-center justify-end flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
-          {/* <div className="ml-1">
+        <div className="flex justify-between flex-column md:flex-row flex-wrap space-y-4 md:space-y-0 py-2 border border-tableBorder bg-white">
+          <div className="ml-1">
             <Button
-              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-newButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4"
-              onClick={() => setShowDialog(true)}
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
               style={{ outline: 'none', borderColor: 'transparent !important' }}
             >
               <span>
                 <i
-                  className="pi pi-plus font-semibold"
+                  className="pi pi-arrow-left font-semibold"
                   style={{ fontSize: '12px' }}
                 ></i>
               </span>
-              NEW
+              BACK
             </Button>
-          </div> */}
+          </div>
 
           <div className="relative mx-8 mr-4">
             <input
@@ -189,7 +203,17 @@ const CustomerInvoice: React.FC = () => {
                     <div className="flex justify-center items-center py-2">
                       <Button
                         className="font-semibold gap-2.5 rounded-lg bg-warning text-black py-2 px-4"
-                        onClick={() => handleInvoiceClick(customer.CustomerID, customer.CustomerName, customer.NationalID, customer.CustomerAddress, customer.ContactNo, customer.Email, customer.formattedCustomerID)}
+                        onClick={() =>
+                          handleInvoiceClick(
+                            customer.CustomerID,
+                            customer.CustomerName,
+                            customer.NationalID,
+                            customer.CustomerAddress,
+                            customer.ContactNo,
+                            customer.Email,
+                            customer.formattedCustomerID,
+                          )
+                        }
                       >
                         <span>
                           <i

@@ -6,22 +6,25 @@ import { toast } from 'react-toastify';
 import UserInsert from './UserInsert';
 import axios from 'axios';
 import UserUpdate from './UserUpdate';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard: React.FC = () => {
 
-   // Step 1: Retrieve stored URL from localStorage
-   const storedUrl: string | null = localStorage.getItem('currentUrl');
+  //  // Step 1: Retrieve stored URL from localStorage
+  //  const storedUrl: string | null = localStorage.getItem('currentUrl');
 
-   // Step 2: Ensure storedUrl is a string or provide a default value
-   const actualStoredUrl: string = storedUrl ?? '';
+  //  // Step 2: Ensure storedUrl is a string or provide a default value
+  //  const actualStoredUrl: string = storedUrl ?? '';
  
-   useEffect(() => {
-     // Step 3: Check if the stored URL matches a specific value
-     if (actualStoredUrl === '/userDashboard') {
-       // Perform actions or logic for the matching condition
-       console.log('Stored URL matches /userDashboard');
-     }
-   }, [actualStoredUrl]); // Include actualStoredUrl in the dependency array if needed
+  //  useEffect(() => {
+  //    // Step 3: Check if the stored URL matches a specific value
+  //    if (actualStoredUrl === '/userDashboard') {
+  //      // Perform actions or logic for the matching condition
+  //      console.log('Stored URL matches /userDashboard');
+  //    }
+  //  }, [actualStoredUrl]); // Include actualStoredUrl in the dependency array if needed
+
+  const navigate = useNavigate(); // Get the navigate function
 
    
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
@@ -124,6 +127,10 @@ const UserDashboard: React.FC = () => {
       : true,
   );
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="User Dashboard" />
@@ -136,13 +143,27 @@ const UserDashboard: React.FC = () => {
               onClick={() => setShowDialog(true)}
               style={{ outline: 'none', borderColor: 'transparent !important' }}
             >
-              {/* <span>
+              <span>
                 <i
                   className="pi pi-plus font-semibold"
                   style={{ fontSize: '12px' }}
                 ></i>
-              </span> */}
+              </span>
               NEW
+            </Button>
+
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-arrow-left font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              BACK
             </Button>
           </div>
 
@@ -229,12 +250,12 @@ const UserDashboard: React.FC = () => {
                         className="font-semibold gap-2.5 rounded-lg bg-editButtonColor text-white py-2 px-4"
                         onClick={() => handleEditClick(user.UserID)} // Ensure this is correct
                       >
-                        {/* <span>
+                        <span>
                           <i
                             className="pi pi-pencil font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
-                        </span> */}
+                        </span>
                         EDIT
                       </Button>
                     </div>
@@ -245,12 +266,12 @@ const UserDashboard: React.FC = () => {
                         className="font-semibold gap-2.5 rounded-lg bg-danger text-white py-2 px-4"
                         onClick={() => handleDeleteClick(user.UserID)}
                       >
-                        {/* <span>
+                        <span>
                           <i
                             className="pi pi-trash font-semibold"
                             style={{ fontSize: '12px' }}
                           ></i>
-                        </span> */}
+                        </span>
                         DELETE
                       </Button>
                     </div>

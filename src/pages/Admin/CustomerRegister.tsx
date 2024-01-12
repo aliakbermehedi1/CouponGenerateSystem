@@ -8,8 +8,10 @@ import { useEffect, useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerRegister: React.FC = () => {
+  const navigate = useNavigate(); // Get the navigate function
   const RollName = localStorage.getItem('RollName'); //Here local storage UserName
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
@@ -130,6 +132,10 @@ const CustomerRegister: React.FC = () => {
       : true,
   );
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Customer Dashboard" />
@@ -162,6 +168,20 @@ const CustomerRegister: React.FC = () => {
                 ></i>
               </span>
               EXPORT
+            </Button>
+
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-arrow-left font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              BACK
             </Button>
           </div>
 

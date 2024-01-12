@@ -6,8 +6,10 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import BranchInsert from './BranchInsert';
 import BranchUpdate from './BranchUpdate';
+import { useNavigate } from 'react-router-dom';
 
 const BranchDashboard: React.FC = () => {
+  const navigate = useNavigate(); // Get the navigate function
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedBranch, setSelectedBranch] = useState<any>(null); // Initially set to null
@@ -66,41 +68,6 @@ const BranchDashboard: React.FC = () => {
   };
 
   // handle Delete
-  // const handleDeleteClick = (branch: number) => {
-  //   setBranchIdToDelete(branch);
-  //   setShowConfirmationDialog(true);
-  // };
-
-  // const confirmDelete = async () => {
-  //   try {
-  //     const response = await axios.put(
-  //       'https://arabian-hunter-backend.vercel.app/api/branch/DeleteBranch',
-  //       { BranchID: branchIdToDelete },
-  //     );
-
-  //     if (response.data.success) {
-  //       fetchBranch();
-  //       setShowConfirmationDialog(false); // Close the confirmation dialog
-
-  //       // Display a success toast message
-  //       toast.success('Deleted Successfully', {
-  //         position: 'top-right',
-  //         autoClose: 3000, // Close the toast after 3 seconds
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //     } else {
-  //       console.error('Failed to delete customer:', response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error deleting customer:', error);
-  //   }
-  // };
-
-  // handle Delete
   const handleDeleteClick = (branch: number) => {
     setBranchIdToDelete(branch); // Store the customerId that needs to be deleted
     setShowConfirmationDialog(true); // Show the confirmation dialog
@@ -145,6 +112,10 @@ const BranchDashboard: React.FC = () => {
       : true,
   );
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Branch Dashboard" />
@@ -164,6 +135,20 @@ const BranchDashboard: React.FC = () => {
                 ></i>
               </span>
               NEW
+            </Button>
+
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-arrow-left font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              BACK
             </Button>
           </div>
 

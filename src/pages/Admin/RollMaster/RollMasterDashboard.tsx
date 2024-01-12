@@ -1,5 +1,6 @@
 import Breadcrumb from '../../../components/Breadcrumb';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { toast } from 'react-toastify';
@@ -8,6 +9,7 @@ import RollEdit from './RollEdit';
 import axios from 'axios';
 
 const RollMasterDashboard: React.FC = () => {
+  const navigate = useNavigate(); // Get the navigate function
   const [showDialog, setShowDialog] = useState<boolean>(false); //insert customer
   const [showDialog1, setShowDialog1] = useState<boolean>(false); //update customer
   const [selectedRoll, setSelectedRoll] = useState<any>(null); // Initially set to null
@@ -27,10 +29,11 @@ const RollMasterDashboard: React.FC = () => {
   // Fetch customers from the API
   // Construct the API endpoint URL using the environment variable
 
-
   const fetchRolls = async () => {
     try {
-      const response = await axios.get(`https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoles`);
+      const response = await axios.get(
+        `https://arabian-hunter-backend.vercel.app/api/RollMaster/GetRoles`,
+      );
       if (response.data.success) {
         setRollData(response.data.data);
       }
@@ -38,7 +41,6 @@ const RollMasterDashboard: React.FC = () => {
       console.error('Error fetching rolls:', error);
     }
   };
-  
 
   useEffect(() => {
     fetchRolls();
@@ -79,6 +81,10 @@ const RollMasterDashboard: React.FC = () => {
       : true,
   );
 
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+
   return (
     <>
       <Breadcrumb pageName="Roll Master" />
@@ -98,6 +104,20 @@ const RollMasterDashboard: React.FC = () => {
                 ></i>
               </span>
               NEW
+            </Button>
+
+            <Button
+              className="font-semibold inline-flex items-center justify-center gap-2.5 rounded-lg bg-editButtonColor py-2 px-10 text-center text-white hover:bg-opacity-90 lg:px-8 xl:px-4 ml-4"
+              onClick={handleBackClick} // Use the handleBackClick function here
+              style={{ outline: 'none', borderColor: 'transparent !important' }}
+            >
+              <span>
+                <i
+                  className="pi pi-arrow-left font-semibold"
+                  style={{ fontSize: '12px' }}
+                ></i>
+              </span>
+              BACK
             </Button>
           </div>
 
