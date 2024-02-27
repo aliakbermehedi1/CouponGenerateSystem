@@ -209,3 +209,14 @@ span.flatpickr-weekday,
 .p-dialog .p-dialog-titlebar {
   background-color: #fff;
 }
+
+
+@keyframes animate {
+  to {
+    transform: translateY(20px);
+  }
+}
+
+.animated-logo {
+  animation: animate 2s infinite ease alternate;
+}

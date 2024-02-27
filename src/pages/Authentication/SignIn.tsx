@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Logo from '../../images/logo/mainLogo.png';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,27 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 const SignIn: React.FC = () => {
   const navigate = useNavigate(); // Initialize useNavigate hook
 
+  //  for Animation
+  const [skewClass, setSkewClass] = useState('-skew-y-12');
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSkewClass('skew-x-6');
+    }, 3000);
+
+    // Clear timeout to prevent memory leaks
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setSkewClass('skew-y-6');
+    }, 3000);
+
+    // Clear timeout to prevent memory leaks
+    return () => clearTimeout(timeoutId);
+  }, []);
+  // end animation
   const [loginId, setLoginId] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +113,11 @@ const SignIn: React.FC = () => {
         <div className="hidden w-full xl:block xl:w-1/2 ">
           <div className="py-17.5 pr-16 pl-28 text-center">
             <div className="w-full h-full">
-              <img src={Logo} alt="Logo" className="w-full h-56 -skew-y-1" />
+              <img
+                src={Logo}
+                alt="Logo"
+                className={`w-full h-56 ${skewClass} animated-logo`}
+              />
             </div>
           </div>
         </div>
@@ -140,9 +165,8 @@ const SignIn: React.FC = () => {
 
             <div className="mb-5">
               <div className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90 grid grid-cols-6">
-               
-               <div className='col-span-2'></div>
-                <div className='col-span-2 flex justify-center items-center'>
+                <div className="col-span-2"></div>
+                <div className="col-span-2 flex justify-center items-center">
                   <input
                     className="font-semibold"
                     type="submit"
